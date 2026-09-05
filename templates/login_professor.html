@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ورود اساتید</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <h2>ورود اساتید</h2>
+        <form method="POST">
+            <input type="text" name="personnel_code" placeholder="کد پرسنلی" required>
+            <input type="password" name="password" placeholder="رمز عبور" required>
+            <button type="submit">ورود</button>
+        </form>
+        <p class="login-note">رمز عبور به صورت پیش‌فرض، کد ملی است</p>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flash-error">
+                    {% for msg in messages %}<li>{{ msg }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+</body>
+</html>

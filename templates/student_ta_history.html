@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سابقه دستیاری</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div><a href="{{ url_for('logout') }}">خروج</a></div>
+        <div>سامانه مدیریت دستیار آموزشی دانشکده کامپیوتر شریف</div>
+    </div>
+    <div class="sidebar">
+        <a href="{{ url_for('professor_dashboard', section='courses') }}">درس های من</a>
+        <a href="{{ url_for('professor_dashboard', section='add_course') }}">افزودن درس</a>
+        <a href="{{ url_for('professor_dashboard', section='profile') }}">ویرایش پروفایل</a>
+    </div>
+    <div class="main" dir="rtl">
+        <h3>نام و نام خانوادگی: {{ student.name }}</h3>
+        <h3>شماره دانشجویی: {{ student.student_number }}</h3>
+        
+        <h3>نظرات</h3>
+        
+        {% if reviews %}
+            {% for review in reviews %}
+                <div class="course-section">
+                    <div class="course-title">
+                        {{ review.course_name }} — {{ review.professor_name }} — نیمسال {{ review.term }}
+                    </div>
+                    <div>
+                        امتیاز: {{ review.rating }}<br>
+                        متن نظر: {{ review.comment }}<br>
+                        نظر‌دهنده: {{ review.reviewer_name }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div>نظری ثبت نشده است</div>
+        {% endif %}
+        
+        <h3>سابقه درخواست‌ها</h3>
+        
+        {% if requests %}
+            {% for req in requests %}
+                <div class="course-section">
+                    <div>
+                        {{ req.course_name }} — {{ req.professor_name }} — نیمسال {{ req.term }}
+                        {% if req.status == 'accepted' %}
+                            <span class="status-badge status-accepted">پذیرفته شده</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div>درخواستی ثبت نکرده است</div>
+        {% endif %}
+        
+        <a class="back-link" href="{{ url_for('professor_dashboard') }}">بازگشت</a>
+    </div>
+</body>
+</html>

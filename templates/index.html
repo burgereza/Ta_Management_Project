@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سامانه مدیریت دستیاران آموزشی</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="index-container">
+        <h1>سامانه مدیریت دستیار آموزشی دانشکده کامپیوتر شریف</h1>
+        <div class="index-buttons">
+            <a href="{{ url_for('login_professor') }}" class="btn btn-blue">ورود اساتید</a>
+            <a href="{{ url_for('login_student') }}" class="btn btn-blue">ورود دانشجویان</a>
+        </div>
+    </div>
+</body>
+</html>
