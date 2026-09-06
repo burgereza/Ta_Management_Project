@@ -56,7 +56,6 @@ def logout():
     return redirect(url_for('index'))
 
 
-# ==================== صفحات استاد ====================
 
 @app.route('/professor_dashboard')
 def professor_dashboard():
@@ -64,10 +63,6 @@ def professor_dashboard():
         return redirect(url_for('login_professor'))
 
     professor_id = session['user_id']
-    professor = database.get_professor_by_personnel_code(professor_id)
-    if not professor:
-        return redirect(url_for('login_professor'))
-
     section = request.args.get('section', 'courses')
 
     if section == 'profile':
@@ -95,28 +90,16 @@ def add_course_route():
         return redirect(url_for('login_professor'))
 
     professor_id = session['user_id']
-    professor = database.get_professor_by_personnel_code(professor_id)
-    if not professor:
-        return redirect(url_for('login_professor'))
 
     course_code = request.form['course_code']
     term = request.form['term']
-
-    base_course = database.get_base_course_by_code(course_code)
-    if not base_course:
-        flash('کد درس نامعتبر است')
+    
+    if database.get_course_by_code_and_term(course_code, professor_id, term):
+        flash('درس تکراری است')
         return redirect(url_for('professor_dashboard'))
     
-    existing_course = database.get_course_by_code_and_term(course_code, professor_id, term)
-    if existing_course:
-        flash('این درس قبلاً در این ترم اضافه شده است')
-        return redirect(url_for('professor_dashboard'))
-    
-    new_course = database.add_course_for_professor(course_code, professor_id, term)
-    if new_course:
-        flash('درس با موفقیت اضافه شد')
-    else:
-        flash('خطا در افزودن درس')
+    database.add_course_for_professor(course_code, professor_id, term)
+    flash('درس با موفقیت اضافه شد')
     
     return redirect(url_for('professor_dashboard'))
 
@@ -127,17 +110,12 @@ def delete_course_route():
         return redirect(url_for('login_professor'))
 
     professor_id = session['user_id']
-    professor = database.get_professor_by_personnel_code(professor_id)
-    if not professor:
-        return redirect(url_for('login_professor'))
-
+    
     course_code = request.args.get('course_code')
     term = request.args.get('term')
 
-    if database.delete_course(course_code, professor_id, term):
-        flash('درس حذف شد')
-    else:
-        flash('خطا در حذف درس')
+    database.delete_course(course_code, professor_id, term)
+    flash('درس با موفقیت حذف شد')
     
     return redirect(url_for('professor_dashboard'))
 
@@ -148,19 +126,12 @@ def professor_course():
         return redirect(url_for('login_professor'))
 
     professor_id = session['user_id']
-    professor = database.get_professor_by_personnel_code(professor_id)
-    if not professor:
-        return redirect(url_for('login_professor'))
+   
 
     course_code = request.args.get('course_code')
     term = request.args.get('term')
-
-    result = database.get_course_by_code_and_term(course_code, professor_id, term)
-    if not result:
-        flash('درس یافت نشد')
-        return redirect(url_for('professor_dashboard'))
     
-    course, base_course = result
+    course, base_course = database.get_course_by_code_and_term(course_code, professor_id, term)
 
     pending = database.get_requests_with_students_by_course(course_code, professor_id, term, 'pending')
     accepted = database.get_requests_with_students_by_course(course_code, professor_id, term, 'accepted')
@@ -178,19 +149,12 @@ def accept_request_route(request_id):
         return redirect(url_for('login_professor'))
 
     professor_id = session['user_id']
-    professor = database.get_professor_by_personnel_code(professor_id)
-    if not professor:
-        return redirect(url_for('login_professor'))
 
     req = database.get_request_by_id(request_id)
     
-    if req and req.professor_id == professor_id:
-        if database.update_request_status(request_id, 'accepted'):
-            flash('درخواست با موفقیت پذیرفته شد')
-        else:
-            flash('خطا در پذیرش درخواست')
-    else:
-        flash('شما دسترسی به این درخواست ندارید')
+    database.update_request_status(request_id, 'accepted')
+    flash('درخواست با موفقیت پذیرفته شد')
+        
     
     if req:
         return redirect(url_for('professor_course', 
@@ -206,15 +170,8 @@ def student_ta_history(student_id):
         return redirect(url_for('login_professor'))
 
     professor_id = session['user_id']
-    professor = database.get_professor_by_personnel_code(professor_id)
-    if not professor:
-        return redirect(url_for('login_professor'))
 
     student = database.get_student_by_student_number(student_id)
-    if not student:
-        flash('دانشجو یافت نشد')
-        return redirect(url_for('professor_dashboard'))
-
     reviews_data = database.get_reviews_with_course_and_professor(student_id)
     
     reviews = []
@@ -250,21 +207,15 @@ def change_professor_password_route():
         return redirect(url_for('login_professor'))
 
     professor_id = session['user_id']
-    professor = database.get_professor_by_personnel_code(professor_id)
-    if not professor:
-        return redirect(url_for('login_professor'))
 
     new_password = request.form['new_password']
     
-    if database.update_professor_password(professor_id, new_password):
-        flash('رمز عبور با موفقیت تغییر کرد')
-    else:
-        flash('خطا در تغییر رمز عبور')
+    database.update_professor_password(professor_id, new_password)
+    flash('رمز عبور با موفقیت تغییر کرد')
     
     return redirect(url_for('professor_dashboard', section='profile'))
 
 
-# ==================== صفحات دانشجو ====================
 
 @app.route('/student_dashboard')
 def student_dashboard():
@@ -272,10 +223,6 @@ def student_dashboard():
         return redirect(url_for('login_student'))
 
     student_id = session['user_id']
-    student = database.get_student_by_student_number(student_id)
-    if not student:
-        return redirect(url_for('login_student'))
-
     section = request.args.get('section', 'courses')
 
     if section == 'profile':
@@ -320,25 +267,18 @@ def request_ta_route():
         return redirect(url_for('login_student'))
 
     student_id = session['user_id']
-    student = database.get_student_by_student_number(student_id)
-    if not student:
-        return redirect(url_for('login_student'))
 
     course_code = request.args.get('course_code')
     professor_id = request.args.get('professor_id')
     term = request.args.get('term')
 
-    existing = database.get_request_by_student_and_course(student_id, course_code, professor_id, term)
-    if existing:
+    if  database.get_request_by_student_and_course(student_id, course_code, professor_id, term):
         flash('شما قبلاً برای این درس درخواست داده‌اید')
         return redirect(url_for('student_dashboard'))
     
-    new_request = database.add_new_request(student_id, course_code, professor_id, term, 'pending')
-    if new_request:
-        flash('درخواست شما با موفقیت ثبت شد')
-    else:
-        flash('خطا در ثبت درخواست')
-    
+    database.add_new_request(student_id, course_code, professor_id, term, 'pending')
+    flash('درخواست شما با موفقیت ثبت شد')
+
     return redirect(url_for('student_dashboard'))
 
 
@@ -348,20 +288,12 @@ def review_course():
         return redirect(url_for('login_student'))
 
     student_id = session['user_id']
-    student = database.get_student_by_student_number(student_id)
-    if not student:
-        return redirect(url_for('login_student'))
 
     course_code = request.args.get('course_code')
     professor_id = request.args.get('professor_id')
     term = request.args.get('term')
-
-    result = database.get_course_by_code_and_term(course_code, professor_id, term)
-    if not result:
-        flash('درس یافت نشد')
-        return redirect(url_for('student_dashboard', section='review'))
     
-    course, base_course = result
+    course, base_course = database.get_course_by_code_and_term(course_code, professor_id, term)
 
     accepted_requests = database.get_accepted_requests_for_course(course_code, professor_id, term)
     tas = []
@@ -379,9 +311,6 @@ def add_review_route():
         return redirect(url_for('login_student'))
 
     reviewer_id = session['user_id']
-    student = database.get_student_by_student_number(reviewer_id)
-    if not student:
-        return redirect(url_for('login_student'))
 
     ta_id = request.form['ta_id']
     course_code = request.form['course_code']
@@ -396,15 +325,10 @@ def add_review_route():
     
     if existing_review:
         flash('شما قبلاً برای این دستیار در این درس نظر ثبت کرده‌اید')
-        return redirect(url_for('review_course', 
-                              course_code=course_code, 
-                              professor_id=professor_id, 
-                              term=term))
+        return redirect(url_for('review_course', course_code=course_code, professor_id=professor_id, term=term))
 
-    if database.add_new_review(ta_id, course_code, professor_id, term, reviewer_id, rating, comment):
-        flash('نظر شما با موفقیت ثبت شد')
-    else:
-        flash('خطا در ثبت نظر')
+    database.add_new_review(ta_id, course_code, professor_id, term, reviewer_id, rating, comment)
+    flash('نظر شما با موفقیت ثبت شد')
     
     return redirect(url_for('student_dashboard', section='review'))
 
@@ -415,16 +339,10 @@ def change_student_password_route():
         return redirect(url_for('login_student'))
 
     student_id = session['user_id']
-    student = database.get_student_by_student_number(student_id)
-    if not student:
-        return redirect(url_for('login_student'))
-
     new_password = request.form['new_password']
     
-    if database.update_student_password(student_id, new_password):
-        flash('رمز عبور با موفقیت تغییر کرد')
-    else:
-        flash('خطا در تغییر رمز عبور')
+    database.update_student_password(student_id, new_password)
+    flash('رمز عبور با موفقیت تغییر کرد')
     
     return redirect(url_for('student_dashboard', section='profile'))
 
