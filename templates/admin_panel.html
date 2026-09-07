@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body dir="rtl" align-items="center">
+    <div>
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for msg in messages %}
+                        <p>{{ msg }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        
+
+        <div class="box">
+            <form method="POST">
+                <div class="form-group">
+                    <label>کد پرسنلی:</label>
+                    <input type="text" name="personnel_code" placeholder="" required>
+                    <br>
+                    <label>نام و نام خانوادگی:</label>
+                    <input type="text" name="professor_name" placeholder="" required>
+                    <br>
+                    <label>کد ملی:</label>
+                    <input type="text" name="professor_password" placeholder="" required>
+                </div>
+                <button type="submit" name="add_professor" class="btn btn-green">افزودن استاد</button>
+            </form>
+        </div>
+
+
+
+        <div class="box">
+            <form method="POST">
+                <div class="form-group">
+                    <label>شماره دانشجویی:</label>
+                    <input type="text" name="student_number" placeholder="" required>
+                    <br>
+                    <label>نام و نام خانوادگی:</label>
+                    <input type="text" name="student_name" placeholder="" required>
+                    <br>
+                    <label>کد ملی:</label>
+                    <input type="text" name="student_password" placeholder="" required>
+                </div>
+                <button type="submit" name="add_student" class="btn btn-green">افزودن دانشجو</button>
+            </form>
+        </div>
+
+        
+
+
+        <div class="box">
+            <form method="POST">
+                <div class="form-group">
+                    <label>کد درس:</label>
+                    <input type="text" name="course_code" placeholder="" required>
+                    <br>
+                    <label>نام درس:</label>
+                    <input type="text" name="course_name" placeholder="" required>
+                </div>
+                <button type="submit" name="add_base_course" class="btn btn-green">افزودن درس</button>
+            </form>
+        </div>
+        
+    </div>
+</body>
+</html>

@@ -8,11 +8,29 @@
 <ol dir="rtl">
 <br>
 <li>Python 3.10.0</li>
-<!-- <li>ابتدا از <a href="https://jasmine.github.io/">اینجا</a> به وب سایت رسمی رفته و یکی از ورژن های آن را انتخاب کنید تا به صفحه آن منتقل شوید.</li> -->
 <br>
-<li>PostgreSQL</li>
+
+```
+
+pip install flask flask-sqlalchemy psycopg2-binary
+
+```
+
+
+<br>
+
+<li> از <a href="https://www.postgresql.org/download/">اینجا</a> دیتابیس PostgreSQL را نصب کنید.</li>
+
 <br>
 <li>flask_sqlalchemy</li>
+<br>
+
+```
+
+pip install flask flask-sqlalchemy psycopg2-binary
+
+```
+
 <br>
 <br>
 </ol>

@@ -9,7 +9,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1000@localhost/Ta
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
-
+#db.create_all()
 
 @app.route('/')
 def index():
@@ -23,7 +23,7 @@ def login_professor():
         password = request.form['password']
         
         professor = database.get_professor_by_personnel_code(personnel_code)
-        if professor and professor.password == password:
+        if professor.password == password:
             session['user_id'] = personnel_code
             session['user_name'] = professor.name
             return redirect(url_for('professor_dashboard'))
@@ -40,7 +40,7 @@ def login_student():
         password = request.form['password']
         
         student = database.get_student_by_student_number(student_number)
-        if student and student.password == password:
+        if student.password == password:
             session['user_id'] = student_number
             session['user_name'] = student.name
             return redirect(url_for('student_dashboard'))
@@ -345,6 +345,66 @@ def change_student_password_route():
     flash('رمز عبور با موفقیت تغییر کرد')
     
     return redirect(url_for('student_dashboard', section='profile'))
+
+
+
+# Admin:
+
+@app.route('/admin1234', methods=['GET', 'POST'])
+def admin_panel():
+  
+    if request.method == 'POST' and 'add_professor' in request.form:
+        personnel_code = request.form['personnel_code']
+        name = request.form['professor_name']
+        password = request.form['professor_password']
+        
+        if database.get_professor_by_personnel_code(personnel_code):
+            flash('کد پرسنلی تکراری است')
+        else:
+            new_professor = database.Professor(
+                personnel_code=personnel_code,
+                name=name,
+                password=password
+            )
+            db.session.add(new_professor)
+            db.session.commit()
+            flash(' با موفقیت اضافه شد')
+    
+
+    if request.method == 'POST' and 'add_student' in request.form:
+        student_number = request.form['student_number']
+        name = request.form['student_name']
+        password = request.form['student_password']
+        
+        if database.get_student_by_student_number(student_number):
+            flash('شماره دانشجویی تکراری است')
+        else:
+            new_student = database.Student(
+                student_number=student_number,
+                name=name,
+                password=password
+            )
+            db.session.add(new_student)
+            db.session.commit()
+            flash(' با موفقیت اضافه شد')
+    
+    if request.method == 'POST' and 'add_base_course' in request.form:
+        code = request.form['course_code']
+        name = request.form['course_name']
+        
+        if database.get_base_course_by_code(code):
+            flash('کد درس تکراری است')
+        else:
+            new_course = database.BaseCourse(
+                code=code,
+                name=name
+            )
+            db.session.add(new_course)
+            db.session.commit()
+            flash('با موفقیت اضافه شد')
+    
+    return render_template('admin_panel.html')
+
 
 
 if __name__ == '__main__':
