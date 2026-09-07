@@ -2,58 +2,62 @@
 
 <h2>سامانه مدیریت دستیاران آموزشی</h2>
 
-<br>
-پیش نیاز ها
-<br>
 
-<h2>مراحل نصب:</h2>
+<h2>پیش نیاز ها:</h2>
 
 <ol>
-
+<br>
+<li>Python 3.10.0</li>
 <br>
 <li>ابتدا از <a href="https://jasmine.github.io/">اینجا</a> به وب سایت رسمی رفته و یکی از ورژن های آن را انتخاب کنید تا به صفحه آن منتقل شوید.</li>
 <br>
-<li>در قسمت downloads روی standalone release  کلیک کنید.</li>
+<li>PostgreSQL</li>
 <br>
-<li>حال به صفحه گیتهاب مربوط به ورژن انتخابی هدایت میشوید. از آن جا فایل زیپ jasmine را دانلود کنید.</li>
-<br>
-<li>فایل unzip شده را به پروژه خودتان اضافه کنید. مانند زیر:</li>
+<li>flask_sqlalchemy</li>
 <br>
 <img dir="ltr" src="./images/2023-01-14_22-40-49.png" style="display: block;padding:5px; auto;padding-top:10px; width: 30%; margin-left: auto;margin-right: auto;">
 <br>
-
 </ol>
 
 
-<h2>اماده سازی</h2>
-
+<h2>اماده سازی:</h2>
+<br>
+برای اتصال دیتابیس postgre، نام کاربری و رمز عبور و نام دیتابیسی که ایجاد کرده اید را در سطر ۸ ام فایل app.py به صورت زیر وارد کنید: 
+<br>
+``` python
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://USERNAME(default: postgres):PASSWORD@localhost/DATABASE_NAME'
+```
+<br>
+<br>
 <br>
 
-فایل های زیر spec و src ، دمو های یاسمین هستند؛ آن ها را پاک کنید. (همچنین لازم است رفرنس های آن ها را از specrunner.html پاک کنید)
 
-<br>
-<br>
-<br>
-<br>
 
 داخل فولدر spec ، یک فایل جاوااسکریپت برای نوشتن تست کیس ها بسازید.
 <br>
 در انتها آدرس هر دو فایل تست و کد جاوااسکریپت را به صورت زیر به SpecRunner.html اضافه کنید:
 <br>
-
 برای مشاهده نتیجه اجرای تست ها ، کافی است فایل SpecRunner.html را اجرا کنید. در این صورت با چنین صفحه ای مواجه خواهید شد:
-
 <br>
 <br>
-<br>
-<h2>ایجاد تست کیس</h2>
-
 <br>
 
-هر واحد تست در jasmine که شامل تست های مشابه است و برای یک فایل خاص نوشته شده باشند را Suite می‌نامند. هر Suite از دو جزء describe() و it() تشکیل میشود.
-هر Suite دو پارامتر دارد؛ پارامتر اول نام آن و پارامتر دوم مجموعه توابع تست آن میباشد که به صورت زیر با describe و it ها تعریف میشوند:
+
+<h2>اجرا</h2>
+<br>
+
+برای اجرای پروژه فایل app.py را اجرا کنید یا دستور زیر را در مسیر برنامه وارد کنید:
 
 <div dir="ltr">
+
+```
+
+python app.py
+
+```
+
+
+
 
 ``` js
 describe("Adding single number ",function () { 
