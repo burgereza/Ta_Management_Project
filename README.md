@@ -24,7 +24,7 @@
 <br>
 برای اتصال دیتابیس postgre، نام کاربری و رمز عبور و نام دیتابیسی که ایجاد کرده اید را در سطر ۸ ام فایل app.py به صورت زیر وارد کنید: 
 <br>
-``` python
+``` 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://USERNAME(default: postgres):PASSWORD@localhost/DATABASE_NAME'
 ```
 <br>
