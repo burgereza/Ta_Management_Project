@@ -3,7 +3,6 @@ db = SQLAlchemy()
 from models import Professor, Student, BaseCourse, Course, Request, Review
 
 
-# ==================== عملیات استاد ====================
 
 def get_professor_by_personnel_code(personnel_code):
     return Professor.query.get(personnel_code)
@@ -18,7 +17,6 @@ def update_professor_password(personnel_code, new_password):
     return False
 
 
-# ==================== عملیات دانشجو ====================
 
 def get_student_by_student_number(student_number):
     return Student.query.get(student_number)
@@ -33,7 +31,6 @@ def update_student_password(student_number, new_password):
     return False
 
 
-# ==================== عملیات درس پایه ====================
 
 def get_all_base_courses():
     return BaseCourse.query.all()
@@ -43,10 +40,8 @@ def get_base_course_by_code(course_code):
     return BaseCourse.query.get(course_code)
 
 
-# ==================== عملیات درس ارائه شده ====================
 
 def get_courses_by_professor(professor_id):
-    """دریافت دروس یک استاد با نام درس از base_courses"""
     courses = Course.query.filter_by(professor_id=professor_id).all()
     result = []
     for course in courses:
@@ -57,7 +52,6 @@ def get_courses_by_professor(professor_id):
 
 
 def get_course_by_code_and_term(course_code, professor_id, term):
-    """دریافت یک درس با نام از base_courses"""
     course = Course.query.filter_by(
         code=course_code,
         professor_id=professor_id,
@@ -97,7 +91,6 @@ def delete_course(course_code, professor_id, term):
 
 
 def get_all_courses():
-    """دریافت همه دروس با نام از base_courses"""
     courses = Course.query.all()
     result = []
     for course in courses:
@@ -108,7 +101,6 @@ def get_all_courses():
 
 
 def get_all_courses_with_professors():
-    """دریافت همه دروس با نام استاد و نام درس"""
     courses = Course.query.all()
     result = []
     for course in courses:
@@ -120,13 +112,10 @@ def get_all_courses_with_professors():
 
 
 def get_courses_with_accepted_tas():
-    """دریافت دروسی که حداقل یک دستیار پذیرفته شده دارند"""
-    # همه دروس را بگیر
     all_courses = Course.query.all()
     result = []
     
     for course in all_courses:
-        # بررسی کن که آیا این درس درخواست پذیرفته شده دارد
         accepted_requests = Request.query.filter_by(
             course_code=course.code,
             professor_id=course.professor_id,
@@ -134,7 +123,7 @@ def get_courses_with_accepted_tas():
             status='accepted'
         ).all()
         
-        if accepted_requests:  # اگر حداقل یک درخواست پذیرفته شده داشت
+        if accepted_requests:
             base_course = BaseCourse.query.get(course.code)
             professor = Professor.query.get(course.professor_id)
             if base_course and professor:
@@ -143,7 +132,6 @@ def get_courses_with_accepted_tas():
     return result
 
 
-# ==================== عملیات درخواست دستیاری ====================
 
 def get_requests_by_course(course_code, professor_id, term, status=None):
     query = Request.query.filter_by(
@@ -205,7 +193,6 @@ def get_requests_by_student(student_id):
 
 
 def get_requests_with_students_by_course(course_code, professor_id, term, status=None):
-    """دریافت درخواست‌ها با اطلاعات دانشجو"""
     requests = get_requests_by_course(course_code, professor_id, term, status)
     result = []
     for req in requests:
@@ -215,7 +202,6 @@ def get_requests_with_students_by_course(course_code, professor_id, term, status
     return result
 
 
-# ==================== عملیات نظر ====================
 
 def add_new_review(ta_id, course_code, professor_id, term, reviewer_id, rating, comment):
     review = Review(
@@ -247,7 +233,6 @@ def get_reviews_by_ta(ta_id):
 
 
 def get_reviews_with_reviewers(ta_id):
-    """دریافت نظرات با اطلاعات نظر‌دهنده"""
     reviews = Review.query.filter_by(ta_id=ta_id).all()
     result = []
     for review in reviews:
@@ -258,7 +243,6 @@ def get_reviews_with_reviewers(ta_id):
 
 
 def get_reviews_with_course_and_professor(ta_id):
-    """دریافت نظرات با اطلاعات کامل درس، استاد و نظر‌دهنده"""
     reviews = Review.query.filter_by(ta_id=ta_id).all()
     result = []
     
@@ -273,10 +257,8 @@ def get_reviews_with_course_and_professor(ta_id):
     return result
 
 
-# ==================== درخواست‌های دانشجو ====================
 
 def get_student_requests_with_details(student_id):
-    """دریافت تمام درخواست‌های یک دانشجو با اطلاعات کامل درس و استاد"""
     requests = Request.query.filter_by(student_id=student_id).order_by(Request.term.desc()).all()
     result = []
     
