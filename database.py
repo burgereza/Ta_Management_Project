@@ -262,10 +262,10 @@ def get_student_requests_with_details(student_id):
     requests = Request.query.filter_by(student_id=student_id).order_by(Request.term.desc()).all()
     result = []
     
-    for req in requests:
-        base_course = BaseCourse.query.get(req.course_code)
-        professor = Professor.query.get(req.professor_id)
+    for request in requests:
+        base_course = BaseCourse.query.get(request.course_code)
+        professor = Professor.query.get(request.professor_id)
         if base_course and professor:
-            result.append((req, base_course, professor))
+            result.append((request, base_course, professor))
     
     return result
