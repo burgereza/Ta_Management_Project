@@ -27,7 +27,7 @@
         {% endwith %}
 
         {% if section == 'profile' %}
-            <div class="box card shadow-sm p-4">
+            <div class="box card shadow-sm p-4" style="margin-left: 1200px; margin-right: 250px;">
                 <form method="POST" action="{{ url_for('change_professor_password_route') }}">
                     <div class="form-group mb-3">
                         <label class="form-label">رمز عبور قبلی:</label>
@@ -40,7 +40,7 @@
             </div>
 
         {% elif section == 'review' %}
-            <ul class="list-group">
+            <ul class="list-group" style="margin-left: 1100px; margin-right: 250px;">
                 {% for item in courses %}
                     <li class="list-group-item">
                         <a class="text-decoration-none fw-bold" href="{{ url_for('review_course', course_code=item.course.code, professor_id=item.course.professor_id, term=item.course.term) }}">
@@ -54,7 +54,7 @@
 
         {% else %}
             <h3 class="mb-3">دروس متقاضی دستیار آموزشی</h3>
-            <ul class="list-group">
+            <ul class="list-group" style="margin-left: 1000px; margin-right: 250px;">
                 {% for item in courses %}
                     {% set course = item.course %}
                     {% set course_name = item.course_name %}

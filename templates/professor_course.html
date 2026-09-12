@@ -20,8 +20,8 @@
     </div>
 
     <div class="main container-fluid py-4" dir="rtl">
-        <h4 class="mb-3">لیست درخواست های دستیاری</h4>
-        <ul class="list-group mb-4">
+        <h4 class="mb-3" style="margin-left: 1200px; margin-right: 250px;">لیست درخواست های دستیاری</h4>
+        <ul class="list-group mb-4" style="margin-left: 1200px; margin-right: 250px;">
             {% for req, student in pending %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <a class="student-link text-decoration-none fw-bold" href="{{ url_for('student_ta_history', student_id=student.student_number) }}">
@@ -34,8 +34,8 @@
             {% endfor %}
         </ul>
 
-        <h4 class="mt-5 mb-3">دستیاران پذیرفته‌شده</h4>
-        <ul class="list-group">
+        <h4 class="mt-5 mb-3" style="margin-left: 1200px; margin-right: 250px;">دستیاران پذیرفته‌شده</h4>
+        <ul class="list-group" style="margin-left: 1200px; margin-right: 250px;">
             {% for req, student in accepted %}
                 <li class="list-group-item">
                     <a class="student-link text-decoration-none fw-bold" href="{{ url_for('student_ta_history', student_id=student.student_number) }}">

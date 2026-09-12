@@ -29,7 +29,7 @@
 
         {% if tas %}
             {% for ta in tas %}
-                <div class="box card shadow-sm mb-4">
+                <div class="box card shadow-sm mb-4" style="margin-left: 1000px; margin-right: 250px;">
                     <div class="card-body">
                         <h4 class="card-title mb-3">{{ ta.name }}</h4>
                         <form method="POST" action="{{ url_for('add_review_route') }}">
@@ -41,7 +41,7 @@
                             <label class="form-label">امتیاز (۱ تا ۵):</label>
                             <input type="number" name="rating" class="form-control mb-3" min="1" max="5" required>
 
-                            <label class="form-label">نظر:</label>
+                            <label class="form-label">متن نظر:</label>
                             <textarea name="comment" class="form-control mb-3" rows="3"></textarea>
 
                             <button type="submit" class="btn btn-primary">ثبت نظر</button>
