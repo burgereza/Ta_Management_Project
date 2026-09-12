@@ -13,19 +13,15 @@
     </div>
 
     <div class="sidebar">
-        <a href="{{ url_for('student_dashboard', section='courses') }}" class="btn btn-outline-primary m-1">لیست دروس</a>
-        <a href="{{ url_for('student_dashboard', section='review') }}" class="btn btn-outline-success m-1">نظرسنجی</a>
-        <a href="{{ url_for('student_dashboard', section='profile') }}" class="btn btn-outline-secondary m-1">ویرایش پروفایل</a>
+        <a href="{{ url_for('student_dashboard', section='courses') }}" class="btn btn-outline-primary m-1" style="color: aliceblue; background-color: rgb(2, 80, 196);">لیست دروس</a>
+        <a href="{{ url_for('student_dashboard', section='review') }}" class="btn btn-outline-success m-1" style="color: aliceblue; background-color: rgb(2, 80, 196);">نظرسنجی</a>
+        <a href="{{ url_for('student_dashboard', section='profile') }}" class="btn btn-outline-secondary m-1" style="color: aliceblue; background-color: rgb(2, 80, 196);">ویرایش پروفایل</a>
     </div>
 
     <div class="main container-fluid py-4" dir="rtl">
-        <h3 class="mb-4">لیست دستیاران {{ course_name.name }} - {{professor_name}} - نیسمال {{ course.term }}</h3>
+        <h3 class="mb-4" style="margin-right: 250px;">لیست دستیاران {{ course_name.name }} - {{professor_name}} - نیسمال {{ course.term }}</h3>
 
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class="flash alert alert-success">{% for msg in messages %}<li>{{ msg }}</li>{% endfor %}</ul>
-            {% endif %}
-        {% endwith %}
+        
 
         {% if tas %}
             {% for ta in tas %}
@@ -54,6 +50,12 @@
         {% endif %}
 
         <a class="back-link btn btn-secondary mt-3" href="{{ url_for('student_dashboard', section='review') }}">بازگشت</a>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flash alert alert-success" style="margin-left: 1250px; margin-right: 250px;">{% for msg in messages %}<li>{{ msg }}</li>{% endfor %}</ul>
+            {% endif %}
+        {% endwith %}
     </div>
 </body>
 </html>

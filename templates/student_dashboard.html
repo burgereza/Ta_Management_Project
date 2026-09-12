@@ -14,17 +14,13 @@
     </div>
 
     <div class="sidebar">
-        <a href="{{ url_for('student_dashboard', section='courses') }}" class="btn btn-outline-primary m-1">لیست دروس</a>
-        <a href="{{ url_for('student_dashboard', section='review') }}" class="btn btn-outline-success m-1">نظرسنجی</a>
-        <a href="{{ url_for('student_dashboard', section='profile') }}" class="btn btn-outline-secondary m-1">ویرایش پروفایل</a>
+        <a href="{{ url_for('student_dashboard', section='courses') }}" class="btn btn-outline-primary m-1" style="color: aliceblue; background-color: rgb(2, 80, 196);">لیست دروس</a>
+        <a href="{{ url_for('student_dashboard', section='review') }}" class="btn btn-outline-success m-1" style="color: aliceblue; background-color: rgb(2, 80, 196);">نظرسنجی</a>
+        <a href="{{ url_for('student_dashboard', section='profile') }}" class="btn btn-outline-secondary m-1" style="color: aliceblue; background-color: rgb(2, 80, 196);">ویرایش پروفایل</a>
     </div>
 
     <div class="main container-fluid py-4" dir="rtl">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class="flash alert alert-success">{% for msg in messages %}<li>{{ msg }}</li>{% endfor %}</ul>
-            {% endif %}
-        {% endwith %}
+        
 
         {% if section == 'profile' %}
             <div class="box card shadow-sm p-4" style="margin-left: 1200px; margin-right: 250px;">
@@ -53,7 +49,7 @@
             </ul>
 
         {% else %}
-            <h3 class="mb-3">دروس متقاضی دستیار آموزشی</h3>
+            <h3 class="mb-3" style="margin-right: 250px;">دروس متقاضی دستیار آموزشی</h3>
             <ul class="list-group" style="margin-left: 1000px; margin-right: 250px;">
                 {% for item in courses %}
                     {% set course = item.course %}
@@ -77,6 +73,12 @@
                 {% endfor %}
             </ul>
         {% endif %}
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flash alert alert-success" style="margin-left: 1250px; margin-right: 250px;">{% for msg in messages %}<li>{{ msg }}</li>{% endfor %}</ul>
+            {% endif %}
+        {% endwith %}
     </div>
 </body>
 </html>

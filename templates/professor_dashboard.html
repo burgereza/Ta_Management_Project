@@ -14,17 +14,12 @@
     </div>
 
     <div class="sidebar">
-        <a href="{{ url_for('professor_dashboard', section='courses') }}" class="btn btn-outline-primary m-1">درس های من</a>
-        <a href="{{ url_for('professor_dashboard', section='add_course') }}" class="btn btn-outline-success m-1">افزودن درس</a>
-        <a href="{{ url_for('professor_dashboard', section='profile') }}" class="btn btn-outline-secondary m-1">ویرایش پروفایل</a>
+        <a href="{{ url_for('professor_dashboard', section='courses') }}" class="btn btn-outline-primary m-1" style="color: aliceblue; background-color: rgb(2, 80, 196);">درس های من</a>
+        <a href="{{ url_for('professor_dashboard', section='add_course') }}" class="btn btn-outline-primary m-1" style="color: aliceblue; background-color: rgb(2, 80, 196);">افزودن درس</a>
+        <a href="{{ url_for('professor_dashboard', section='profile') }}" class="btn btn-outline-primary m-1" style="color: aliceblue; background-color: rgb(2, 80, 196);">ویرایش پروفایل</a>
     </div>
 
     <div class="main container-fluid py-4" dir="rtl">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class="flash alert alert-success">{% for msg in messages %}<li>{{ msg }}</li>{% endfor %}</ul>
-            {% endif %}
-        {% endwith %}
 
         {% if section == 'profile' %}
             <div class="box card shadow-sm p-4" style="margin-left: 1200px; margin-right: 250px;">
@@ -74,6 +69,13 @@
                 <div class="no-data alert alert-info">هیچ درسی اضافه نشده است</div>
             {% endif %}
         {% endif %}
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flash alert alert-success" style="margin-left: 1250px; margin-right: 250px;">{% for msg in messages %}<li>{{ msg }}</li>{% endfor %}</ul>
+            {% endif %}
+        {% endwith %}
+
     </div>
 </body>
 </html>

@@ -292,7 +292,7 @@ def change_professor_password_route():
     if models.professor.update_professor_password(professor_id, old_password, new_password):
         flash('رمز عبور با موفقیت تغییر کرد')
     else:
-        flash('خطا در تغییر رمز عبور')
+        flash('رمز عبور قبلی نادرست است')
     
     return redirect(url_for('professor_dashboard', section='profile'))
 

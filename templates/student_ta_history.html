@@ -14,16 +14,16 @@
     </div>
 
     <div class="sidebar">
-        <a href="{{ url_for('professor_dashboard', section='courses') }}" class="btn btn-outline-primary m-1">درس های من</a>
-        <a href="{{ url_for('professor_dashboard', section='add_course') }}" class="btn btn-outline-success m-1">افزودن درس</a>
-        <a href="{{ url_for('professor_dashboard', section='profile') }}" class="btn btn-outline-secondary m-1">ویرایش پروفایل</a>
+        <a href="{{ url_for('professor_dashboard', section='courses') }}" class="btn btn-outline-primary m-1" style="color: aliceblue; background-color: rgb(2, 80, 196);">درس های من</a>
+        <a href="{{ url_for('professor_dashboard', section='add_course') }}" class="btn btn-outline-success m-1" style="color: aliceblue; background-color: rgb(2, 80, 196);">افزودن درس</a>
+        <a href="{{ url_for('professor_dashboard', section='profile') }}" class="btn btn-outline-secondary m-1" style="color: aliceblue; background-color: rgb(2, 80, 196);">ویرایش پروفایل</a>
     </div>
 
     <div class="main container-fluid py-4" dir="rtl">
-        <div class="card shadow-sm mb-4">
+        <div class="card shadow-sm mb-4" style="margin-left: 1000px; margin-right: 200px;">
             <div class="card-body">
-                <h3 class="card-title mb-3">نام و نام خانوادگی: {{ student.name }}</h3>
-                <h3 class="card-text">شماره دانشجویی: {{ student.student_number }}</h3>
+                <h4 class="card-title mb-3">نام و نام خانوادگی: {{ student.name }}</h4>
+                <h4 class="card-text">شماره دانشجویی: {{ student.student_number }}</h4>
             </div>
         </div>
 
@@ -33,7 +33,7 @@
             <div class="col-md-6">
                 <div class="card shadow-sm h-100">
                     <div class="card-body">
-                        <h3 class="card-title mb-4 text-center">نظرات</h3>
+                        <h4 class="card-title mb-4 text-center">نظرات</h4>
 
                         {% if reviews %}
                             {% for review in reviews %}
@@ -75,7 +75,7 @@
             <div class="col-md-6">
                 <div class="card shadow-sm h-100">
                     <div class="card-body">
-                        <h3 class="card-title mb-4 text-center">سابقه درخواست‌ها</h3>
+                        <h4 class="card-title mb-4 text-center">سابقه درخواست‌ها</h4>
 
                         {% if requests %}
                             {% for req in requests %}

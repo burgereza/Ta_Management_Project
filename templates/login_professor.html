@@ -16,14 +16,14 @@
     </style>
 </head>
 <body>
-    
-    <div class="card shadow mx-auto mt-5" style="max-width: 450px;">
-        <div class="card-body p-4">
+     
+    <div class="card shadow mx-auto mt-5 bg-white bg-opacity-75 rounded-4 shadow-lg p-5 text-center" dir="rtl"  style="max-width: 450px;">
+        <div class="card-body p-4 text-center">
             <h2 class="card-title text-center mb-4">ورود اساتید</h2>
-            <form method="POST">
+            <form method="POST" class="w-100">
                 <input type="text" name="personnel_code" class="form-control mb-3" placeholder="کد پرسنلی" required>
                 <input type="password" name="password" class="form-control mb-3" placeholder="رمز عبور" required>
-                <button type="submit" class="btn btn-primary w-100">ورود</button>
+                <button type="submit" class="btn btn-primary w-50 center">ورود</button>
             </form>
             <p class="login-note text-muted text-center mt-3 mb-0">رمز عبور به صورت پیش‌فرض، کد ملی است</p>
             {% with messages = get_flashed_messages() %}
