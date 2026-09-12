@@ -1,6 +1,6 @@
 from database import db
 from models.student import Student
-from models.base_course import BaseCourse
+from models.course_name import CourseName
 from models.professor import Professor
 
 
@@ -52,11 +52,11 @@ def get_reviews_with_course_and_professor(ta_id):
     reviews = Review.query.filter_by(ta_id=ta_id).all()
     result = []
     for review in reviews:
-        base_course = BaseCourse.query.get(review.course_code)
+        course_name = CourseName.query.get(review.course_code)
         professor = Professor.query.get(review.professor_id)
         reviewer = Student.query.get(review.reviewer_id)
-        if base_course and professor and reviewer:
-            result.append((review, base_course, professor, reviewer))
+        if course_name and professor and reviewer:
+            result.append((review, course_name, professor, reviewer))
     return result
 
 

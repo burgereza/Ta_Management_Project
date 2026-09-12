@@ -1,6 +1,6 @@
 from database import db
 from models.student import Student
-from models.base_course import BaseCourse
+from models.course_name import CourseName
 from models.professor import Professor
 
 
@@ -90,10 +90,10 @@ def get_student_requests_with_details(student_id):
     requests = Request.query.filter_by(student_id=student_id).order_by(Request.term.desc()).all()
     result = []
     for req in requests:
-        base_course = BaseCourse.query.get(req.course_code)
+        course_name = CourseName.query.get(req.course_code)
         professor = Professor.query.get(req.professor_id)
-        if base_course and professor:
-            result.append((req, base_course, professor))
+        if course_name and professor:
+            result.append((req, course_name, professor))
     return result
 
 
@@ -109,8 +109,8 @@ def get_courses_with_accepted_tas():
             status='accepted'
         ).all()
         if accepted:
-            base_course = BaseCourse.query.get(course.code)
+            course_name = CourseName.query.get(course.code)
             professor = Professor.query.get(course.professor_id)
-            if base_course and professor:
-                result.append((course, base_course, professor))
+            if course_name and professor:
+                result.append((course, course_name, professor))
     return result

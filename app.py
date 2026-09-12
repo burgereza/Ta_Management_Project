@@ -9,7 +9,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1000@localhost/Ta
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
-
+ 
 
 @app.route('/')
 def index():
@@ -78,11 +78,11 @@ def admin_panel():
         else:
             flash('شماره دانشجویی تکراری است')
     
-    if request.method == 'POST' and 'add_base_course' in request.form:
+    if request.method == 'POST' and 'add_course_name' in request.form:
         code = request.form['course_code']
         name = request.form['course_name']
         
-        if models.base_course.add_base_course(code, name):
+        if models.course_name.add_course_name(code, name):
             flash('درس پایه با موفقیت اضافه شد')
         else:
             flash('کد درس تکراری است')
@@ -106,17 +106,17 @@ def professor_dashboard():
         return render_template('professor_dashboard.html', section='profile')
 
     if section == 'add_course':
-        base_courses = models.base_course.get_all_base_courses()
+        course_names = models.course_name.get_all_course_names()
         return render_template('professor_dashboard.html', 
                              section='add_course', 
-                             base_courses=base_courses)
+                             course_names=course_names)
 
     courses_with_base = models.course.get_courses_by_professor(professor_id)
     courses = []
-    for course, base_course in courses_with_base:
+    for course, course_name in courses_with_base:
         courses.append({
             'course': course,
-            'base_course': base_course
+            'course_name': course_name
         })
     return render_template('professor_dashboard.html', section='courses', courses=courses)
 
@@ -134,8 +134,8 @@ def add_course_route():
     course_code = request.form['course_code']
     term = request.form['term']
 
-    base_course = models.base_course.get_base_course_by_code(course_code)
-    if not base_course:
+    course_name = models.course_name.get_course_name_by_code(course_code)
+    if not course_name:
         flash('کد درس نامعتبر است')
         return redirect(url_for('professor_dashboard'))
     
@@ -192,14 +192,14 @@ def professor_course():
         flash('درس یافت نشد')
         return redirect(url_for('professor_dashboard'))
     
-    course, base_course = result
+    course, course_name = result
 
     pending = models.request.get_requests_with_students_by_course(course_code, professor_id, term, 'pending')
     accepted = models.request.get_requests_with_students_by_course(course_code, professor_id, term, 'accepted')
     
     return render_template('professor_course.html', 
                          course=course,
-                         base_course=base_course,
+                         course_name=course_name,
                          pending=pending, 
                          accepted=accepted)
 
@@ -250,9 +250,9 @@ def student_ta_history(student_id):
     reviews_data = models.review.get_reviews_with_course_and_professor(student_id)
     
     reviews = []
-    for review, base_course, professor_obj, reviewer in reviews_data:
+    for review, course_name, professor_obj, reviewer in reviews_data:
         reviews.append({
-            'course_name': base_course.name,
+            'course_name': course_name.name,
             'professor_name': professor_obj.name,
             'term': review.term,
             'rating': review.rating,
@@ -262,9 +262,9 @@ def student_ta_history(student_id):
 
     requests_data = models.request.get_student_requests_with_details(student_id)
     requests = []
-    for req, base_course, professor_obj in requests_data:
+    for req, course_name, professor_obj in requests_data:
         requests.append({
-            'course_name': base_course.name,
+            'course_name': course_name.name,
             'professor_name': professor_obj.name,
             'term': req.term,
             'status': req.status
@@ -315,10 +315,10 @@ def student_dashboard():
     if section == 'review':
         courses_with_accepted_tas = models.request.get_courses_with_accepted_tas()
         courses = []
-        for course, base_course, professor in courses_with_accepted_tas:
+        for course, course_name, professor in courses_with_accepted_tas:
             courses.append({
                 'course': course,
-                'base_course': base_course,
+                'course_name': course_name,
                 'professor': professor
             })
         return render_template('student_dashboard.html', section='review', courses=courses)
@@ -326,7 +326,7 @@ def student_dashboard():
     all_courses_with_professors = models.course.get_all_courses_with_professors()
     courses_with_status = []
     
-    for course, base_course, professor in all_courses_with_professors:
+    for course, course_name, professor in all_courses_with_professors:
         req = models.request.get_request_by_student_and_course(
             student_id, 
             course.code, 
@@ -337,7 +337,7 @@ def student_dashboard():
         
         courses_with_status.append({
             'course': course,
-            'base_course': base_course,
+            'course_name': course_name,
             'professor': professor,
             'status': status
         })
@@ -392,7 +392,7 @@ def review_course():
         flash('درس یافت نشد')
         return redirect(url_for('student_dashboard', section='review'))
     
-    course, base_course = result
+    course, course_name = result
     professor_name = models.professor.get_professor_by_personnel_code(professor_id).name
 
     accepted_requests = models.request.get_accepted_requests_for_course(course_code, professor_id, term)
@@ -402,7 +402,7 @@ def review_course():
         if student_obj:
             tas.append(student_obj)
     
-    return render_template('review.html', course=course, base_course=base_course, tas=tas, professor_name=professor_name)
+    return render_template('review.html', course=course, course_name=course_name, tas=tas, professor_name=professor_name)
 
 
 @app.route('/add_review', methods=['POST'])

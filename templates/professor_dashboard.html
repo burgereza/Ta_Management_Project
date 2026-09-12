@@ -46,8 +46,8 @@
                         <label class="form-label">درس:</label>
                         <select name="course_code" class="form-select" required>
                             <option value="">انتخاب کنید</option>
-                            {% for base_course in base_courses %}
-                                <option value="{{ base_course.code }}">{{ base_course.code }} - {{ base_course.name }}</option>
+                            {% for course_name in course_names %}
+                                <option value="{{ course_name.code }}">{{ course_name.code }} - {{ course_name.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -65,7 +65,7 @@
                     {% for item in courses %}
                         <li class="list-group-item">
                             <a class="text-decoration-none fw-bold" href="{{ url_for('professor_course', course_code=item.course.code, term=item.course.term) }}">
-                                {{ item.course.code }} - {{ item.base_course.name }} - نیمسال {{ item.course.term }}
+                                {{ item.course.code }} - {{ item.course_name.name }} - نیمسال {{ item.course.term }}
                             </a>
                         </li>
                     {% endfor %}

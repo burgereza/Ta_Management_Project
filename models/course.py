@@ -1,5 +1,5 @@
 from database import db
-from models.base_course import BaseCourse
+from models.course_name import CourseName
 from models.professor import Professor
 
 
@@ -14,9 +14,9 @@ def get_courses_by_professor(professor_id):
     courses = Course.query.filter_by(professor_id=professor_id).all()
     result = []
     for course in courses:
-        base_course = BaseCourse.query.get(course.code)
-        if base_course:
-            result.append((course, base_course))
+        course_name = CourseName.query.get(course.code)
+        if course_name:
+            result.append((course, course_name))
     return result
 
 
@@ -28,8 +28,8 @@ def get_course_by_code_and_term(course_code, professor_id, term):
     ).first()
     if not course:
         return None
-    base_course = BaseCourse.query.get(course.code)
-    return (course, base_course)
+    course_name = CourseName.query.get(course.code)
+    return (course, course_name)
 
 
 def add_course_for_professor(course_code, professor_id, term):
@@ -63,9 +63,9 @@ def get_all_courses():
     courses = Course.query.all()
     result = []
     for course in courses:
-        base_course = BaseCourse.query.get(course.code)
-        if base_course:
-            result.append((course, base_course))
+        course_name = CourseName.query.get(course.code)
+        if course_name:
+            result.append((course, course_name))
     return result
 
 
@@ -73,8 +73,8 @@ def get_all_courses_with_professors():
     courses = Course.query.all()
     result = []
     for course in courses:
-        base_course = BaseCourse.query.get(course.code)
+        course_name = CourseName.query.get(course.code)
         professor = Professor.query.get(course.professor_id)
-        if base_course and professor:
-            result.append((course, base_course, professor))
+        if course_name and professor:
+            result.append((course, course_name, professor))
     return result
