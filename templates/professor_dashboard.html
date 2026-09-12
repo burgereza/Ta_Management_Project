@@ -4,67 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="header">
-        <div><a href="{{ url_for('logout') }}">خروج</a></div>
+    <div class="header d-flex justify-content-between align-items-center p-3">
+        <div><a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm">خروج</a></div>
         <div> دکتر {{ session.get('user_name', 'استاد') }}</div>
         <div>سامانه مدیریت دستیار آموزشی دانشکده کامپیوتر شریف</div>
     </div>
+
     <div class="sidebar">
-        <a href="{{ url_for('professor_dashboard', section='courses') }}">درس های من</a>
-        <a href="{{ url_for('professor_dashboard', section='add_course') }}">افزودن درس</a>
-        <a href="{{ url_for('professor_dashboard', section='profile') }}">ویرایش پروفایل</a>
+        <a href="{{ url_for('professor_dashboard', section='courses') }}" class="btn btn-outline-primary m-1">درس های من</a>
+        <a href="{{ url_for('professor_dashboard', section='add_course') }}" class="btn btn-outline-success m-1">افزودن درس</a>
+        <a href="{{ url_for('professor_dashboard', section='profile') }}" class="btn btn-outline-secondary m-1">ویرایش پروفایل</a>
     </div>
-    <div class="main" dir="rtl">
-        
+
+    <div class="main container-fluid py-4" dir="rtl">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
-                <ul class="flash">{% for msg in messages %}<li>{{ msg }}</li>{% endfor %}</ul>
+                <ul class="flash alert alert-success">{% for msg in messages %}<li>{{ msg }}</li>{% endfor %}</ul>
             {% endif %}
         {% endwith %}
 
         {% if section == 'profile' %}
-            <h3>تغییر رمز عبور</h3>
-            <form method="POST" action="{{ url_for('change_professor_password_route') }}">
-                <input type="password" name="new_password" placeholder="رمز عبور جدید" required> <br>
-                <button type="submit">تغییر رمز</button>
-            </form>
+            <div class="box card shadow-sm p-4">
+                <form method="POST" action="{{ url_for('change_professor_password_route') }}">
+                    <div class="form-group mb-3">
+                        <label class="form-label">رمز عبور قبلی:</label>
+                        <input type="password" name="old_password" class="form-control mb-3"  required>
+                        <label class="form-label">رمز عبور جدید:</label>
+                        <input type="password" name="new_password" class="form-control mb-3"  required>
+                        <button type="submit" class="btn btn-green btn-success">تغییر رمز عبور</button>
+                    </div>
+                </form>
+            </div>
 
         {% elif section == 'add_course' %}
-            <div class="box">
+            <div class="box card shadow-sm p-4">
                 <form method="POST" action="{{ url_for('add_course_route') }}">
-                    <div class="form-group">
-                        <label>درس:</label>
-                        <select name="course_code" required>
-                            <option value="">انتخاب کنید...</option>
+                    <div class="form-group mb-3">
+                        <label class="form-label">درس:</label>
+                        <select name="course_code" class="form-select" required>
+                            <option value="">انتخاب کنید</option>
                             {% for base_course in base_courses %}
                                 <option value="{{ base_course.code }}">{{ base_course.code }} - {{ base_course.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>نیمسال:</label>
-                        <input type="text" name="term" placeholder="به شکل 14052" required>
+                    <div class="form-group mb-3">
+                        <label class="form-label">نیمسال:</label>
+                        <input type="text" name="term" class="form-control" placeholder="به شکل 14052" required>
                     </div>
-                    <button type="submit" class="btn btn-green">افزودن درس</button>
+                    <button type="submit" class="btn btn-green btn-success">افزودن درس</button>
                 </form>
             </div>
-            
 
         {% else %}
             {% if courses %}
-                <ul>
+                <ul class="list-group">
                     {% for item in courses %}
-                        <li>
-                            <a href="{{ url_for('professor_course', course_code=item.course.code, term=item.course.term) }}">
+                        <li class="list-group-item">
+                            <a class="text-decoration-none fw-bold" href="{{ url_for('professor_course', course_code=item.course.code, term=item.course.term) }}">
                                 {{ item.course.code }} - {{ item.base_course.name }} - نیمسال {{ item.course.term }}
                             </a>
                         </li>
                     {% endfor %}
                 </ul>
             {% else %}
-                <div class="no-data">هیچ درسی اضافه نشده است</div>
+                <div class="no-data alert alert-info">هیچ درسی اضافه نشده است</div>
             {% endif %}
         {% endif %}
     </div>

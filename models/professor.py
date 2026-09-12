@@ -12,9 +12,9 @@ def get_professor_by_personnel_code(personnel_code):
     return Professor.query.get(personnel_code)
 
 
-def update_professor_password(personnel_code, new_password):
+def update_professor_password(personnel_code, old_password, new_password):
     professor = Professor.query.get(personnel_code)
-    if professor:
+    if professor and professor.password == old_password:
         professor.password = new_password
         db.session.commit()
         return True

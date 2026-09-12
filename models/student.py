@@ -12,9 +12,9 @@ def get_student_by_student_number(student_number):
     return Student.query.get(student_number)
 
 
-def update_student_password(student_number, new_password):
+def update_student_password(student_number, old_password, new_password):
     student = Student.query.get(student_number)
-    if student:
+    if student and student.password == old_password:
         student.password = new_password
         db.session.commit()
         return True

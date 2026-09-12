@@ -285,10 +285,11 @@ def change_professor_password_route():
     professor = models.professor.get_professor_by_personnel_code(professor_id)
     if not professor:
         return redirect(url_for('login_professor'))
-
+    
+    old_password = request.form['old_password']
     new_password = request.form['new_password']
     
-    if models.professor.update_professor_password(professor_id, new_password):
+    if models.professor.update_professor_password(professor_id, old_password, new_password):
         flash('رمز عبور با موفقیت تغییر کرد')
     else:
         flash('خطا در تغییر رمز عبور')
@@ -392,6 +393,7 @@ def review_course():
         return redirect(url_for('student_dashboard', section='review'))
     
     course, base_course = result
+    professor_name = models.professor.get_professor_by_personnel_code(professor_id).name
 
     accepted_requests = models.request.get_accepted_requests_for_course(course_code, professor_id, term)
     tas = []
@@ -400,7 +402,7 @@ def review_course():
         if student_obj:
             tas.append(student_obj)
     
-    return render_template('review.html', course=course, base_course=base_course, tas=tas)
+    return render_template('review.html', course=course, base_course=base_course, tas=tas, professor_name=professor_name)
 
 
 @app.route('/add_review', methods=['POST'])
@@ -449,12 +451,13 @@ def change_student_password_route():
     if not student:
         return redirect(url_for('login_student'))
 
+    old_password = request.form['old_password']
     new_password = request.form['new_password']
     
-    if models.student.update_student_password(student_id, new_password):
+    if models.student.update_student_password(student_id, old_password, new_password):
         flash('رمز عبور با موفقیت تغییر کرد')
     else:
-        flash('خطا در تغییر رمز عبور')
+        flash('رمز عبور قبلی نادرست است')
     
     return redirect(url_for('student_dashboard', section='profile'))
 
