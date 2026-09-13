@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from database import db
+from database import db, db_name, db_passWord, db_userName
 import models
 
 app = Flask(__name__)
 app.secret_key = '1111'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1000@localhost/TaManagementDB'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://' + db_userName + ':' + db_passWord + '@localhost/' + db_name 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -14,6 +14,8 @@ db.init_app(app)
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
 
 
 @app.route('/login_professor', methods=['GET', 'POST'])
@@ -33,6 +35,8 @@ def login_professor():
     return render_template('login_professor.html')
 
 
+
+
 @app.route('/login_student', methods=['GET', 'POST'])
 def login_student():
     if request.method == 'POST':
@@ -50,10 +54,14 @@ def login_student():
     return render_template('login_student.html')
 
 
+
+
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('index'))
+
+
 
 
 @app.route('/admin1234', methods=['GET', 'POST'])
@@ -90,15 +98,14 @@ def admin_panel():
     return render_template('admin_panel.html')
 
 
+
+
 @app.route('/professor_dashboard')
 def professor_dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login_professor'))
 
     professor_id = session['user_id']
-    professor = models.professor.get_professor_by_personnel_code(professor_id)
-    if not professor:
-        return redirect(url_for('login_professor'))
 
     section = request.args.get('section', 'courses')
 
@@ -107,18 +114,18 @@ def professor_dashboard():
 
     if section == 'add_course':
         course_names = models.course_name.get_all_course_names()
-        return render_template('professor_dashboard.html', 
-                             section='add_course', 
-                             course_names=course_names)
+        return render_template('professor_dashboard.html' ,section='add_course' ,course_names=course_names)
 
-    courses_with_base = models.course.get_courses_by_professor(professor_id)
+    professor_courses = models.course.get_courses_by_professor(professor_id)
     courses = []
-    for course, course_name in courses_with_base:
+    for course, course_name in professor_courses:
         courses.append({
             'course': course,
             'course_name': course_name
         })
     return render_template('professor_dashboard.html', section='courses', courses=courses)
+
+
 
 
 @app.route('/add_course', methods=['POST'])
@@ -127,51 +134,21 @@ def add_course_route():
         return redirect(url_for('login_professor'))
 
     professor_id = session['user_id']
-    professor = models.professor.get_professor_by_personnel_code(professor_id)
-    if not professor:
-        return redirect(url_for('login_professor'))
 
     course_code = request.form['course_code']
     term = request.form['term']
 
-    course_name = models.course_name.get_course_name_by_code(course_code)
-    if not course_name:
-        flash('کد درس نامعتبر است')
-        return redirect(url_for('professor_dashboard'))
     
-    existing_course = models.course.get_course_by_code_and_term(course_code, professor_id, term)
-    if existing_course:
+    if models.course.get_course_by_code_and_term(course_code, professor_id, term):
         flash('این درس قبلاً در این ترم اضافه شده است')
         return redirect(url_for('professor_dashboard'))
     
-    new_course = models.course.add_course_for_professor(course_code, professor_id, term)
-    if new_course:
-        flash('درس با موفقیت اضافه شد')
-    else:
-        flash('خطا در افزودن درس')
+    models.course.add_course_for_professor(course_code, professor_id, term)
+    flash('درس با موفقیت اضافه شد')
     
     return redirect(url_for('professor_dashboard'))
 
 
-@app.route('/delete_course')
-def delete_course_route():
-    if 'user_id' not in session:
-        return redirect(url_for('login_professor'))
-
-    professor_id = session['user_id']
-    professor = models.professor.get_professor_by_personnel_code(professor_id)
-    if not professor:
-        return redirect(url_for('login_professor'))
-
-    course_code = request.args.get('course_code')
-    term = request.args.get('term')
-
-    if models.course.delete_course(course_code, professor_id, term):
-        flash('درس حذف شد')
-    else:
-        flash('خطا در حذف درس')
-    
-    return redirect(url_for('professor_dashboard'))
 
 
 @app.route('/professor_course')
@@ -180,28 +157,18 @@ def professor_course():
         return redirect(url_for('login_professor'))
 
     professor_id = session['user_id']
-    professor = models.professor.get_professor_by_personnel_code(professor_id)
-    if not professor:
-        return redirect(url_for('login_professor'))
-
+    
     course_code = request.args.get('course_code')
     term = request.args.get('term')
-
-    result = models.course.get_course_by_code_and_term(course_code, professor_id, term)
-    if not result:
-        flash('درس یافت نشد')
-        return redirect(url_for('professor_dashboard'))
     
-    course, course_name = result
+    course, course_name = models.course.get_course_by_code_and_term(course_code, professor_id, term)
 
     pending = models.request.get_requests_with_students_by_course(course_code, professor_id, term, 'pending')
     accepted = models.request.get_requests_with_students_by_course(course_code, professor_id, term, 'accepted')
     
-    return render_template('professor_course.html', 
-                         course=course,
-                         course_name=course_name,
-                         pending=pending, 
-                         accepted=accepted)
+    return render_template('professor_course.html', course=course, course_name=course_name, pending=pending, accepted=accepted)
+
+
 
 
 @app.route('/accept_request/<int:request_id>')
@@ -210,26 +177,13 @@ def accept_request_route(request_id):
         return redirect(url_for('login_professor'))
 
     professor_id = session['user_id']
-    professor = models.professor.get_professor_by_personnel_code(professor_id)
-    if not professor:
-        return redirect(url_for('login_professor'))
+    
+    models.request.update_request_status(request_id, 'accepted')
+    flash('درخواست با موفقیت پذیرفته شد')
+    
+    return redirect(url_for('professor_course', course_code=request.course_code, term=request.term))
 
-    req = models.request.get_request_by_id(request_id)
-    
-    if req and req.professor_id == professor_id:
-        if models.request.update_request_status(request_id, 'accepted'):
-            flash('درخواست با موفقیت پذیرفته شد')
-        else:
-            flash('خطا در پذیرش درخواست')
-    else:
-        flash('شما دسترسی به این درخواست ندارید')
-    
-    if req:
-        return redirect(url_for('professor_course', 
-                              course_code=req.course_code, 
-                              term=req.term))
-    else:
-        return redirect(url_for('professor_dashboard'))
+
 
 
 @app.route('/student_ta_history/<student_id>')
@@ -238,17 +192,10 @@ def student_ta_history(student_id):
         return redirect(url_for('login_professor'))
 
     professor_id = session['user_id']
-    professor = models.professor.get_professor_by_personnel_code(professor_id)
-    if not professor:
-        return redirect(url_for('login_professor'))
 
     student = models.student.get_student_by_student_number(student_id)
-    if not student:
-        flash('دانشجو یافت نشد')
-        return redirect(url_for('professor_dashboard'))
 
-    reviews_data = models.review.get_reviews_with_course_and_professor(student_id)
-    
+    reviews_data = models.review.get_reviews_by_student_id(student_id)
     reviews = []
     for review, course_name, professor_obj, reviewer in reviews_data:
         reviews.append({
@@ -270,10 +217,9 @@ def student_ta_history(student_id):
             'status': req.status
         })
     
-    return render_template('student_ta_history.html', 
-                         student=student,
-                         reviews=reviews,
-                         requests=requests)
+    return render_template('student_ta_history.html', student=student, reviews=reviews, requests=requests)
+
+
 
 
 @app.route('/change_professor_password', methods=['POST'])
@@ -282,9 +228,7 @@ def change_professor_password_route():
         return redirect(url_for('login_professor'))
 
     professor_id = session['user_id']
-    professor = models.professor.get_professor_by_personnel_code(professor_id)
-    if not professor:
-        return redirect(url_for('login_professor'))
+
     
     old_password = request.form['old_password']
     new_password = request.form['new_password']
@@ -297,15 +241,14 @@ def change_professor_password_route():
     return redirect(url_for('professor_dashboard', section='profile'))
 
 
+
+
 @app.route('/student_dashboard')
 def student_dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login_student'))
 
     student_id = session['user_id']
-    student = models.student.get_student_by_student_number(student_id)
-    if not student:
-        return redirect(url_for('login_student'))
 
     section = request.args.get('section', 'courses')
 
@@ -333,7 +276,10 @@ def student_dashboard():
             course.professor_id, 
             course.term
         )
-        status = req.status if req else None
+
+        if req:
+            status = req.status
+        else: status = None
         
         courses_with_status.append({
             'course': course,
@@ -345,32 +291,30 @@ def student_dashboard():
     return render_template('student_dashboard.html', section='courses', courses=courses_with_status)
 
 
+
+
 @app.route('/request_ta')
 def request_ta_route():
     if 'user_id' not in session:
         return redirect(url_for('login_student'))
 
     student_id = session['user_id']
-    student = models.student.get_student_by_student_number(student_id)
-    if not student:
-        return redirect(url_for('login_student'))
 
     course_code = request.args.get('course_code')
     professor_id = request.args.get('professor_id')
     term = request.args.get('term')
 
-    existing = models.request.get_request_by_student_and_course(student_id, course_code, professor_id, term)
-    if existing:
+    if models.request.get_request_by_student_and_course(student_id, course_code, professor_id, term):
         flash('شما قبلاً برای این درس درخواست داده‌اید')
         return redirect(url_for('student_dashboard'))
     
-    new_request = models.request.add_new_request(student_id, course_code, professor_id, term, 'pending')
-    if new_request:
-        flash('درخواست شما با موفقیت ثبت شد')
-    else:
-        flash('خطا در ثبت درخواست')
+    models.request.add_new_request(student_id, course_code, professor_id, term, 'pending')
+    flash('درخواست شما با موفقیت ثبت شد')
+   
     
     return redirect(url_for('student_dashboard'))
+
+
 
 
 @app.route('/review_course')
@@ -379,20 +323,12 @@ def review_course():
         return redirect(url_for('login_student'))
 
     student_id = session['user_id']
-    student = models.student.get_student_by_student_number(student_id)
-    if not student:
-        return redirect(url_for('login_student'))
 
     course_code = request.args.get('course_code')
     professor_id = request.args.get('professor_id')
     term = request.args.get('term')
-
-    result = models.course.get_course_by_code_and_term(course_code, professor_id, term)
-    if not result:
-        flash('درس یافت نشد')
-        return redirect(url_for('student_dashboard', section='review'))
     
-    course, course_name = result
+    course, course_name = models.course.get_course_by_code_and_term(course_code, professor_id, term)
     professor_name = models.professor.get_professor_by_personnel_code(professor_id).name
 
     accepted_requests = models.request.get_accepted_requests_for_course(course_code, professor_id, term)
@@ -405,15 +341,14 @@ def review_course():
     return render_template('review.html', course=course, course_name=course_name, tas=tas, professor_name=professor_name)
 
 
+
+
 @app.route('/add_review', methods=['POST'])
 def add_review_route():
     if 'user_id' not in session:
         return redirect(url_for('login_student'))
 
     reviewer_id = session['user_id']
-    student = models.student.get_student_by_student_number(reviewer_id)
-    if not student:
-        return redirect(url_for('login_student'))
 
     ta_id = request.form['ta_id']
     course_code = request.form['course_code']
@@ -422,23 +357,16 @@ def add_review_route():
     rating = int(request.form['rating'])
     comment = request.form['comment']
 
-    existing_review = models.review.check_student_review_for_course(
-        ta_id, course_code, professor_id, term, reviewer_id
-    )
-    
-    if existing_review:
+    if models.review.check_student_review_for_course(ta_id, course_code, professor_id, term, reviewer_id):
         flash('شما قبلاً برای این دستیار در این درس نظر ثبت کرده‌اید')
-        return redirect(url_for('review_course', 
-                              course_code=course_code, 
-                              professor_id=professor_id, 
-                              term=term))
+        return redirect(url_for('review_course', course_code=course_code, professor_id=professor_id, term=term))
 
-    if models.review.add_new_review(ta_id, course_code, professor_id, term, reviewer_id, rating, comment):
-        flash('نظر شما با موفقیت ثبت شد')
-    else:
-        flash('خطا در ثبت نظر')
+    models.review.add_new_review(ta_id, course_code, professor_id, term, reviewer_id, rating, comment)
+    flash('نظر شما با موفقیت ثبت شد')
     
     return redirect(url_for('student_dashboard', section='review'))
+
+
 
 
 @app.route('/change_student_password', methods=['POST'])
@@ -447,9 +375,6 @@ def change_student_password_route():
         return redirect(url_for('login_student'))
 
     student_id = session['user_id']
-    student = models.student.get_student_by_student_number(student_id)
-    if not student:
-        return redirect(url_for('login_student'))
 
     old_password = request.form['old_password']
     new_password = request.form['new_password']

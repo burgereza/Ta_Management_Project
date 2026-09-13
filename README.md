@@ -12,7 +12,7 @@
 
 ```
 
-pip install flask flask-sqlalchemy psycopg2-binary
+pip install python
 
 ```
 

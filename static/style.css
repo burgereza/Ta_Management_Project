@@ -1,15 +1,9 @@
-/* ============================
-   فایل استایل اصلی پروژه
-   سامانه مدیریت دستیاران آموزشی
-   ============================ */
-
-/* ---------- تنظیمات پایه ---------- */
 body {
-    font-family: Tahoma, Arial, sans-serif;
+    font-family: IRANSans, Arial, sans-serif;
     background-color: #939597;
 }
 
-/* ---------- صفحه اصلی ---------- */
+
 .index-container {
     text-align: center;
     margin-top: 80px;
@@ -23,7 +17,7 @@ body {
     flex-wrap: wrap;
 }
 
-/* ---------- دکمه‌ها ---------- */
+
 .btn {
     display: inline-block;
     padding: 15px 40px;
@@ -114,7 +108,6 @@ body {
     background: #388E3C;
 }
 
-/* ---------- فرم‌های ورود ---------- */
 .login-container {
     max-width: 400px;
     margin: 80px auto;
@@ -131,7 +124,7 @@ body {
     margin-top: 15px;
 }
 
-/* ---------- هدر ---------- */
+
 .header {
     background: #2c3e50;
     color: white;
@@ -150,7 +143,7 @@ body {
     color: #3498db;
 }
 
-/* ---------- سایدبار ---------- */
+
 .sidebar {
     width: 200px;
     background: #0f6ec76c;
@@ -172,14 +165,14 @@ body {
     background: #ddd;
 }
 
-/* ---------- محتوای اصلی ---------- */
+
 .main {
     margin-right: 240px;
     padding: 20px;
     text-align: right;
 }
 
-/* ---------- باکس‌ها ---------- */
+
 .box {
     border: 1px solid #ccc;
     padding: 15px;
@@ -188,7 +181,7 @@ body {
     border-radius: 5px;
 }
 
-/* ---------- فرم‌ها ---------- */
+
 .form-group {
     margin-bottom: 15px;
 }
@@ -199,7 +192,7 @@ body {
     font-weight: bold;
 }
 
-/* ---------- پیام‌های فلش ---------- */
+
 .flash {
     color: green;
     list-style: none;
@@ -216,7 +209,7 @@ body {
     color: green;
 }
 
-/* ---------- لینک دانشجو ---------- */
+
 .student-link {
     color: blue;
     text-decoration: underline;
@@ -227,7 +220,7 @@ body {
     color: darkblue;
 }
 
-/* ---------- بدون داده ---------- */
+
 .no-data {
     text-align: center;
     padding: 30px;
@@ -235,7 +228,7 @@ body {
     font-style: italic;
 }
 
-/* ---------- استایل‌های student_ta_history ---------- */
+
 .course-section {
     background: white;
     border: 1px solid #ddd;
@@ -265,7 +258,7 @@ body {
     border: 1px solid #c3e6cb;
 }
 
-/* ---------- ریسپانسیو ---------- */
+
 @media (max-width: 768px) {
     .sidebar {
         width: 100%;
