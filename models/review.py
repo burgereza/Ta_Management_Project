@@ -34,8 +34,8 @@ def check_student_review_for_course(ta_id, course_code, professor_id, term, revi
     return Review.query.filter_by(ta_id=ta_id, course_code=course_code, professor_id=professor_id, term=term, reviewer_id=reviewer_id).first()
 
 
-def get_reviews_with_details_by_student_number(ta_id):
-    reviews = Review.query.filter_by(ta_id=ta_id).all()
+def get_reviews_with_details(student_id):
+    reviews = Review.query.filter_by(ta_id=student_id).all()
     result = []
     for review in reviews:
         course = Course.query.filter_by(code=review.course_code, professor_id=review.professor_id, term=review.term).first()
@@ -46,16 +46,3 @@ def get_reviews_with_details_by_student_number(ta_id):
                             'rating': review.rating, 'comment': review.comment, 'reviewer_name': reviewer.name})
     return result
 
-
-def get_reviews_by_ta(ta_id):
-    return Review.query.filter_by(ta_id=ta_id).all()
-
-
-def get_reviews_with_reviewers(ta_id):
-    reviews = Review.query.filter_by(ta_id=ta_id).all()
-    result = []
-    for review in reviews:
-        reviewer = Student.query.get(review.reviewer_id)
-        if reviewer:
-            result.append((review, reviewer))
-    return result

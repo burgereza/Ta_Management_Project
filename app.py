@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from database import db, db_name, db_passWord, db_userName
 import models
+import handler
 
 app = Flask(__name__)
 app.secret_key = '1111'
@@ -156,8 +157,8 @@ def professor_course():
     
     course = models.course.get_course(course_code, professor_id, term)
 
-    pending = models.request.get_requests_students_by_course(course_code, professor_id, term, 'pending')
-    accepted = models.request.get_requests_students_by_course(course_code, professor_id, term, 'accepted')
+    pending = handler.get_requests_students_by_course(course_code, professor_id, term, 'pending')
+    accepted = handler.get_requests_students_by_course(course_code, professor_id, term, 'accepted')
     
     return render_template('professor_course.html', course=course, pending=pending, accepted=accepted)
 
@@ -185,9 +186,9 @@ def student_ta_history(student_id):
 
     student = models.student.get_student(student_id)
 
-    reviews_with_details = models.review.get_reviews_with_details_by_student_number(student_id)
+    reviews_with_details = models.review.get_reviews_with_details(student_id)
 
-    requests_with_details = models.request.get_student_requests(student_id)
+    requests_with_details = handler.get_student_requests(student_id)
     
     return render_template('student_ta_history.html', student=student, reviews=reviews_with_details, requests=requests_with_details)
 
@@ -227,10 +228,10 @@ def student_dashboard():
         return render_template('student_dashboard.html', section='profile')
 
     if section == 'review':
-        courses_for_review = models.request.get_courses_for_review(student_id)
+        courses_for_review = handler.get_courses_for_review(student_id)
         return render_template('student_dashboard.html', section='review', courses=courses_for_review)
 
-    courses_with_status = models.request.get_courses_with_status_for_student(student_id)
+    courses_with_status = handler.get_courses_with_status_for_student(student_id)
     
     return render_template('student_dashboard.html', section='courses', courses=courses_with_status)
 
@@ -272,7 +273,7 @@ def review_course():
     course = models.course.get_course(course_code, professor_id, term)
     professor_name = models.professor.get_professor(professor_id).name
 
-    course_tas = models.request.get_course_tas(course_code, professor_id, term)
+    course_tas = handler.get_course_tas(course_code, professor_id, term)
     
     return render_template('review.html', course=course, tas=course_tas, professor_name=professor_name)
 
