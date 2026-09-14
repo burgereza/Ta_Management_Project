@@ -8,11 +8,11 @@ class Professor(db.Model):
     password = db.Column(db.String(20), nullable=False)
 
 
-def get_professor_by_personnel_code(personnel_code):
+def get_professor(personnel_code):
     return Professor.query.get(personnel_code)
 
 
-def update_professor_password(personnel_code, old_password, new_password):
+def change_professor_password(personnel_code, old_password, new_password):
     professor = Professor.query.get(personnel_code)
     if professor and professor.password == old_password:
         professor.password = new_password

@@ -11,15 +11,15 @@ class Course(db.Model):
     term = db.Column(db.String(20), primary_key=True)
 
 
-def get_courses_by_professor(professor_id):
+def get_all_professor_courses(professor_id):
     return Course.query.filter_by(professor_id=professor_id).all()
 
 
-def get_course_by_code_professor_term(course_code, professor_id, term):
+def get_course(course_code, professor_id, term):
     return Course.query.filter_by(code=course_code, professor_id=professor_id, term=term).first()
 
 
-def add_course_for_professor(course_code, course_name, professor_id, term):
+def add_professor_course(course_code, course_name, professor_id, term):
     existing = Course.query.filter_by(code=course_code, professor_id=professor_id, term=term).first()
     if existing:
         return None
@@ -31,13 +31,3 @@ def add_course_for_professor(course_code, course_name, professor_id, term):
 
 def get_all_courses():
     return Course.query.all()
-
-
-def get_all_courses_with_professors():
-    courses = Course.query.all()
-    result = []
-    for course in courses:
-        professor = Professor.query.get(course.professor_id)
-        if professor:
-            result.append((course, professor))
-    return result

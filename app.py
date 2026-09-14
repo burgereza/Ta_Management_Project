@@ -24,7 +24,7 @@ def login_professor():
         personnel_code = request.form['personnel_code']
         password = request.form['password']
         
-        professor = models.professor.get_professor_by_personnel_code(personnel_code)
+        professor = models.professor.get_professor(personnel_code)
         if professor and professor.password == password:
             session['user_id'] = personnel_code
             session['user_name'] = professor.name
@@ -43,7 +43,7 @@ def login_student():
         student_number = request.form['student_number']
         password = request.form['password']
         
-        student = models.student.get_student_by_student_number(student_number)
+        student = models.student.get_student(student_number)
         if student and student.password == password:
             session['user_id'] = student_number
             session['user_name'] = student.name
@@ -116,7 +116,7 @@ def professor_dashboard():
         course_names = models.course_name.get_all_course_names()
         return render_template('professor_dashboard.html' ,section='add_course' ,course_names=course_names)
 
-    courses = models.course.get_courses_by_professor(professor_id)
+    courses = models.course.get_all_professor_courses(professor_id)
     return render_template('professor_dashboard.html', section='courses', courses=courses)
 
 
@@ -133,11 +133,11 @@ def add_course():
 
     course_name = models.course_name.get_course_name_by_code(course_code)
 
-    if models.course.get_course_by_code_professor_term(course_code, professor_id, term):
+    if models.course.get_course(course_code, professor_id, term):
         flash('این درس قبلاً در این ترم اضافه شده است')
         return redirect(url_for('professor_dashboard'))
     
-    models.course.add_course_for_professor(course_code, course_name, professor_id, term)
+    models.course.add_professor_course(course_code, course_name, professor_id, term)
     flash('درس با موفقیت اضافه شد')
     
     return redirect(url_for('professor_dashboard'))
@@ -154,7 +154,7 @@ def professor_course():
     course_code = request.args.get('course_code')
     term = request.args.get('term')
     
-    course = models.course.get_course_by_code_professor_term(course_code, professor_id, term)
+    course = models.course.get_course(course_code, professor_id, term)
 
     pending = models.request.get_requests_students_by_course(course_code, professor_id, term, 'pending')
     accepted = models.request.get_requests_students_by_course(course_code, professor_id, term, 'accepted')
@@ -170,7 +170,7 @@ def accept_request(request_id):
         return redirect(url_for('login_professor'))
 
     request = models.request.get_request_by_id(request_id)
-    models.request.update_request_status(request_id, 'accepted')
+    models.request.change_request_status(request_id, 'accepted')
     flash('درخواست با موفقیت پذیرفته شد')
     
     return redirect(url_for('professor_course', course_code=request.course_code, term=request.term))  
@@ -183,11 +183,11 @@ def student_ta_history(student_id):
     if 'user_id' not in session:
         return redirect(url_for('login_professor'))
 
-    student = models.student.get_student_by_student_number(student_id)
+    student = models.student.get_student(student_id)
 
     reviews_with_details = models.review.get_reviews_with_details_by_student_number(student_id)
 
-    requests_with_details = models.request.get_student_requests_with_details_by_student_number(student_id)
+    requests_with_details = models.request.get_student_requests(student_id)
     
     return render_template('student_ta_history.html', student=student, reviews=reviews_with_details, requests=requests_with_details)
 
@@ -204,7 +204,7 @@ def change_professor_password():
     old_password = request.form['old_password']
     new_password = request.form['new_password']
     
-    if models.professor.update_professor_password(professor_id, old_password, new_password):
+    if models.professor.change_professor_password(professor_id, old_password, new_password):
         flash('رمز عبور با موفقیت تغییر کرد')
     else:
         flash('رمز عبور قبلی نادرست است')
@@ -269,16 +269,10 @@ def review_course():
     professor_id = request.args.get('professor_id')
     term = request.args.get('term')
     
-    course = models.course.get_course_by_code_professor_term(course_code, professor_id, term)
-    professor_name = models.professor.get_professor_by_personnel_code(professor_id).name
+    course = models.course.get_course(course_code, professor_id, term)
+    professor_name = models.professor.get_professor(professor_id).name
 
-    course_tas = models.request.get_course_tas_by_course(course_code, professor_id, term)
-    # accepted_requests = models.request.get_accepted_requests_by_course(course_code, professor_id, term)
-    # tas = []
-    # for req in accepted_requests:
-    #     student_obj = models.student.get_student_by_student_number(req.student_id)
-    #     if student_obj:
-    #         tas.append(student_obj)
+    course_tas = models.request.get_course_tas(course_code, professor_id, term)
     
     return render_template('review.html', course=course, tas=course_tas, professor_name=professor_name)
 

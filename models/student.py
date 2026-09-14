@@ -8,7 +8,7 @@ class Student(db.Model):
     password = db.Column(db.String(20), nullable=False)
 
 
-def get_student_by_student_number(student_number):
+def get_student(student_number):
     return Student.query.get(student_number)
 
 

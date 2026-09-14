@@ -22,7 +22,7 @@ class Request(db.Model):
     )
 
 
-def get_requests_by_course(course_code, professor_id, term, status=None):
+def get_course_requests(course_code, professor_id, term, status=None):
     query = Request.query.filter_by(course_code=course_code, professor_id=professor_id, term=term)
     if status:
         query = query.filter_by(status=status)
@@ -40,7 +40,7 @@ def add_new_request(student_id, course_code, professor_id, term, status='pending
     return req
 
 
-def update_request_status(request_id, new_status):
+def change_request_status(request_id, new_status):
     req = Request.query.get(request_id)
     if req:
         req.status = new_status
@@ -53,7 +53,7 @@ def get_request_by_id(request_id):
     return Request.query.get(request_id)
 
 
-def get_course_tas_by_course(course_code, professor_id, term):
+def get_course_tas(course_code, professor_id, term):
     accepted_requests = Request.query.filter_by(course_code=course_code, professor_id=professor_id, term=term, status='accepted').all()
     tas = []
     for req in accepted_requests:
@@ -64,7 +64,7 @@ def get_course_tas_by_course(course_code, professor_id, term):
 
 
 def get_requests_students_by_course(course_code, professor_id, term, status=None):
-    requests = get_requests_by_course(course_code, professor_id, term, status)
+    requests = get_course_requests(course_code, professor_id, term, status)
     result = []
     for req in requests:
         student = Student.query.get(req.student_id)
@@ -73,7 +73,7 @@ def get_requests_students_by_course(course_code, professor_id, term, status=None
     return result
 
 
-def get_student_requests_with_details_by_student_number(student_id):
+def get_student_requests(student_id):
     requests = Request.query.filter_by(student_id=student_id).order_by(Request.term.desc()).all()
     result = []
     for req in requests:
