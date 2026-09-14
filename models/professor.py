@@ -25,11 +25,7 @@ def add_professor(personnel_code, name, password):
     existing = Professor.query.get(personnel_code)
     if existing:
         return False
-    professor = Professor(
-        personnel_code=personnel_code,
-        name=name,
-        password=password
-    )
+    professor = Professor(personnel_code=personnel_code, name=name, password=password)
     db.session.add(professor)
     db.session.commit()
     return True

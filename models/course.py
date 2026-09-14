@@ -20,19 +20,10 @@ def get_course_by_code_professor_term(course_code, professor_id, term):
 
 
 def add_course_for_professor(course_code, course_name, professor_id, term):
-    existing = Course.query.filter_by(
-        code=course_code,
-        professor_id=professor_id,
-        term=term
-    ).first()
+    existing = Course.query.filter_by(code=course_code, professor_id=professor_id, term=term).first()
     if existing:
         return None
-    course = Course(
-        code=course_code,
-        name=course_name,
-        professor_id=professor_id,
-        term=term
-    )
+    course = Course(code=course_code, name=course_name, professor_id=professor_id, term=term)
     db.session.add(course)
     db.session.commit()
     return course

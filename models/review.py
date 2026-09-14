@@ -2,7 +2,7 @@ from database import db
 from models.student import Student
 from models.course_name import CourseName
 from models.professor import Professor
-
+from models.course import Course
 
 class Review(db.Model):
     __tablename__ = 'reviews'
@@ -24,51 +24,26 @@ class Review(db.Model):
 
 
 def add_new_review(ta_id, course_code, professor_id, term, reviewer_id, rating, comment):
-    review = Review(
-        ta_id=ta_id,
-        course_code=course_code,
-        professor_id=professor_id,
-        term=term,
-        reviewer_id=reviewer_id,
-        rating=rating,
-        comment=comment
-    )
+    review = Review(ta_id=ta_id, course_code=course_code, professor_id=professor_id, term=term, reviewer_id=reviewer_id, rating=rating, comment=comment)
     db.session.add(review)
     db.session.commit()
     return review
 
 
 def check_student_review_for_course(ta_id, course_code, professor_id, term, reviewer_id):
-    return Review.query.filter_by(
-        ta_id=ta_id,
-        course_code=course_code,
-        professor_id=professor_id,
-        term=term,
-        reviewer_id=reviewer_id
-    ).first()
+    return Review.query.filter_by(ta_id=ta_id, course_code=course_code, professor_id=professor_id, term=term, reviewer_id=reviewer_id).first()
 
 
 def get_reviews_with_details_by_student_number(ta_id):
-    from models.course import Course
     reviews = Review.query.filter_by(ta_id=ta_id).all()
     result = []
     for review in reviews:
-        course = Course.query.filter_by(
-            code=review.course_code,
-            professor_id=review.professor_id,
-            term=review.term
-        ).first()
+        course = Course.query.filter_by(code=review.course_code, professor_id=review.professor_id, term=review.term).first()
         professor = Professor.query.get(review.professor_id)
         reviewer = Student.query.get(review.reviewer_id)
         if course and professor and reviewer:
-            result.append({
-                'course_name': course.name,
-                'professor_name': professor.name,
-                'term': review.term,
-                'rating': review.rating,
-                'comment': review.comment,
-                'reviewer_name': reviewer.name
-            })
+            result.append({'course_name': course.name, 'professor_name': professor.name, 'term': review.term,
+                            'rating': review.rating, 'comment': review.comment, 'reviewer_name': reviewer.name})
     return result
 
 

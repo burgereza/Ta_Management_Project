@@ -25,11 +25,7 @@ def add_student(student_number, name, password):
     existing = Student.query.get(student_number)
     if existing:
         return False
-    student = Student(
-        student_number=student_number,
-        name=name,
-        password=password
-    )
+    student = Student(student_number=student_number, name=name, password=password)
     db.session.add(student)
     db.session.commit()
     return True
