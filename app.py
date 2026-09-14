@@ -107,7 +107,7 @@ def professor_dashboard():
 
     professor_id = session['user_id']
 
-    section = request.args.get('section', 'courses')
+    section = request.args.get('section')
 
     if section == 'profile':
         return render_template('professor_dashboard.html', section='profile')
@@ -116,34 +116,28 @@ def professor_dashboard():
         course_names = models.course_name.get_all_course_names()
         return render_template('professor_dashboard.html' ,section='add_course' ,course_names=course_names)
 
-    professor_courses = models.course.get_courses_by_professor(professor_id)
-    courses = []
-    for course, course_name in professor_courses:
-        courses.append({
-            'course': course,
-            'course_name': course_name
-        })
+    courses = models.course.get_courses_by_professor(professor_id)
     return render_template('professor_dashboard.html', section='courses', courses=courses)
 
 
 
 
 @app.route('/add_course', methods=['POST'])
-def add_course_route():
+def add_course():
     if 'user_id' not in session:
         return redirect(url_for('login_professor'))
 
     professor_id = session['user_id']
-
     course_code = request.form['course_code']
     term = request.form['term']
 
-    
-    if models.course.get_course_by_code_and_term(course_code, professor_id, term):
+    course_name = models.course_name.get_course_name_by_code(course_code)
+
+    if models.course.get_course_by_code_professor_term(course_code, professor_id, term):
         flash('این درس قبلاً در این ترم اضافه شده است')
         return redirect(url_for('professor_dashboard'))
     
-    models.course.add_course_for_professor(course_code, professor_id, term)
+    models.course.add_course_for_professor(course_code, course_name, professor_id, term)
     flash('درس با موفقیت اضافه شد')
     
     return redirect(url_for('professor_dashboard'))
@@ -157,31 +151,29 @@ def professor_course():
         return redirect(url_for('login_professor'))
 
     professor_id = session['user_id']
-    
     course_code = request.args.get('course_code')
     term = request.args.get('term')
     
-    course, course_name = models.course.get_course_by_code_and_term(course_code, professor_id, term)
+    course = models.course.get_course_by_code_professor_term(course_code, professor_id, term)
 
-    pending = models.request.get_requests_with_students_by_course(course_code, professor_id, term, 'pending')
-    accepted = models.request.get_requests_with_students_by_course(course_code, professor_id, term, 'accepted')
+    pending = models.request.get_requests_students_by_course(course_code, professor_id, term, 'pending')
+    accepted = models.request.get_requests_students_by_course(course_code, professor_id, term, 'accepted')
     
-    return render_template('professor_course.html', course=course, course_name=course_name, pending=pending, accepted=accepted)
+    return render_template('professor_course.html', course=course, pending=pending, accepted=accepted)
 
 
 
 
 @app.route('/accept_request/<int:request_id>')
-def accept_request_route(request_id):
+def accept_request(request_id):
     if 'user_id' not in session:
         return redirect(url_for('login_professor'))
 
-    professor_id = session['user_id']
-    
+    request = models.request.get_request_by_id(request_id)
     models.request.update_request_status(request_id, 'accepted')
     flash('درخواست با موفقیت پذیرفته شد')
     
-    return redirect(url_for('professor_course', course_code=request.course_code, term=request.term))
+    return redirect(url_for('professor_course', course_code=request.course_code, term=request.term))  
 
 
 
@@ -191,33 +183,13 @@ def student_ta_history(student_id):
     if 'user_id' not in session:
         return redirect(url_for('login_professor'))
 
-    professor_id = session['user_id']
-
     student = models.student.get_student_by_student_number(student_id)
 
-    reviews_data = models.review.get_reviews_by_student_id(student_id)
-    reviews = []
-    for review, course_name, professor_obj, reviewer in reviews_data:
-        reviews.append({
-            'course_name': course_name.name,
-            'professor_name': professor_obj.name,
-            'term': review.term,
-            'rating': review.rating,
-            'comment': review.comment,
-            'reviewer_name': reviewer.name
-        })
+    reviews_with_details = models.review.get_reviews_with_details_by_student_number(student_id)
 
-    requests_data = models.request.get_student_requests_with_details(student_id)
-    requests = []
-    for req, course_name, professor_obj in requests_data:
-        requests.append({
-            'course_name': course_name.name,
-            'professor_name': professor_obj.name,
-            'term': req.term,
-            'status': req.status
-        })
+    requests_with_details = models.request.get_student_requests_with_details_by_student_number(student_id)
     
-    return render_template('student_ta_history.html', student=student, reviews=reviews, requests=requests)
+    return render_template('student_ta_history.html', student=student, reviews=reviews_with_details, requests=requests_with_details)
 
 
 
@@ -229,7 +201,6 @@ def change_professor_password_route():
 
     professor_id = session['user_id']
 
-    
     old_password = request.form['old_password']
     new_password = request.form['new_password']
     
@@ -256,37 +227,10 @@ def student_dashboard():
         return render_template('student_dashboard.html', section='profile')
 
     if section == 'review':
-        courses_with_accepted_tas = models.request.get_courses_with_accepted_tas()
-        courses = []
-        for course, course_name, professor in courses_with_accepted_tas:
-            courses.append({
-                'course': course,
-                'course_name': course_name,
-                'professor': professor
-            })
-        return render_template('student_dashboard.html', section='review', courses=courses)
+        courses_for_review = models.request.get_courses_for_review(student_id)
+        return render_template('student_dashboard.html', section='review', courses=courses_for_review)
 
-    all_courses_with_professors = models.course.get_all_courses_with_professors()
-    courses_with_status = []
-    
-    for course, course_name, professor in all_courses_with_professors:
-        req = models.request.get_request_by_student_and_course(
-            student_id, 
-            course.code, 
-            course.professor_id, 
-            course.term
-        )
-
-        if req:
-            status = req.status
-        else: status = None
-        
-        courses_with_status.append({
-            'course': course,
-            'course_name': course_name,
-            'professor': professor,
-            'status': status
-        })
+    courses_with_status = models.request.get_courses_with_status_for_student(student_id)
     
     return render_template('student_dashboard.html', section='courses', courses=courses_with_status)
 
@@ -294,7 +238,7 @@ def student_dashboard():
 
 
 @app.route('/request_ta')
-def request_ta_route():
+def request_ta():
     if 'user_id' not in session:
         return redirect(url_for('login_student'))
 
@@ -310,7 +254,6 @@ def request_ta_route():
     
     models.request.add_new_request(student_id, course_code, professor_id, term, 'pending')
     flash('درخواست شما با موفقیت ثبت شد')
-   
     
     return redirect(url_for('student_dashboard'))
 
@@ -322,13 +265,11 @@ def review_course():
     if 'user_id' not in session:
         return redirect(url_for('login_student'))
 
-    student_id = session['user_id']
-
     course_code = request.args.get('course_code')
     professor_id = request.args.get('professor_id')
     term = request.args.get('term')
     
-    course, course_name = models.course.get_course_by_code_and_term(course_code, professor_id, term)
+    course = models.course.get_course_by_code_professor_term(course_code, professor_id, term)
     professor_name = models.professor.get_professor_by_personnel_code(professor_id).name
 
     accepted_requests = models.request.get_accepted_requests_for_course(course_code, professor_id, term)
@@ -338,13 +279,13 @@ def review_course():
         if student_obj:
             tas.append(student_obj)
     
-    return render_template('review.html', course=course, course_name=course_name, tas=tas, professor_name=professor_name)
+    return render_template('review.html', course=course, tas=tas, professor_name=professor_name)
 
 
 
 
 @app.route('/add_review', methods=['POST'])
-def add_review_route():
+def add_review():
     if 'user_id' not in session:
         return redirect(url_for('login_student'))
 

@@ -19,7 +19,7 @@
     </div>
 
     <div class="main container-fluid py-4" dir="rtl">
-        <h3 class="mb-4" style="margin-right: 250px;">لیست دستیاران {{ course_name.name }} - {{professor_name}} - نیسمال {{ course.term }}</h3>
+        <h3 class="mb-4" style="margin-right: 250px;">لیست دستیاران {{ course.name }} - {{ professor_name }} - نیسمال {{ course.term }}</h3>
 
         
 
@@ -28,7 +28,7 @@
                 <div class="box card shadow-sm mb-4" style="margin-left: 1000px; margin-right: 250px;">
                     <div class="card-body">
                         <h4 class="card-title mb-3">{{ ta.name }}</h4>
-                        <form method="POST" action="{{ url_for('add_review_route') }}">
+                        <form method="POST" action="{{ url_for('add_review') }}">
                             <input type="hidden" name="ta_id" value="{{ ta.student_number }}">
                             <input type="hidden" name="course_code" value="{{ course.code }}">
                             <input type="hidden" name="professor_id" value="{{ course.professor_id }}">
@@ -46,7 +46,7 @@
                 </div>
             {% endfor %}
         {% else %}
-            <p class="alert alert-info">دستیاری برای این درس وجود ندارد.</p>
+            <p class="alert alert-info" style="margin-left: 1000px; margin-right: 250px;">دستیاری برای این درس وجود ندارد.</p>
         {% endif %}
 
         <a class="back-link btn btn-secondary mt-3" href="{{ url_for('student_dashboard', section='review') }}">بازگشت</a>

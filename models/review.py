@@ -48,15 +48,27 @@ def check_student_review_for_course(ta_id, course_code, professor_id, term, revi
     ).first()
 
 
-def get_reviews_by_student_id(ta_id):
+def get_reviews_with_details_by_student_number(ta_id):
+    from models.course import Course
     reviews = Review.query.filter_by(ta_id=ta_id).all()
     result = []
     for review in reviews:
-        course_name = CourseName.query.get(review.course_code)
+        course = Course.query.filter_by(
+            code=review.course_code,
+            professor_id=review.professor_id,
+            term=review.term
+        ).first()
         professor = Professor.query.get(review.professor_id)
         reviewer = Student.query.get(review.reviewer_id)
-        if course_name and professor and reviewer:
-            result.append((review, course_name, professor, reviewer))
+        if course and professor and reviewer:
+            result.append({
+                'course_name': course.name,
+                'professor_name': professor.name,
+                'term': review.term,
+                'rating': review.rating,
+                'comment': review.comment,
+                'reviewer_name': reviewer.name
+            })
     return result
 
 

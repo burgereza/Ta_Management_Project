@@ -2,6 +2,7 @@ from database import db
 from models.student import Student
 from models.course_name import CourseName
 from models.professor import Professor
+from models.course import Course
 
 
 class Request(db.Model):
@@ -76,7 +77,7 @@ def get_accepted_requests_for_course(course_code, professor_id, term):
     ).all()
 
 
-def get_requests_with_students_by_course(course_code, professor_id, term, status=None):
+def get_requests_students_by_course(course_code, professor_id, term, status=None):
     requests = get_requests_by_course(course_code, professor_id, term, status)
     result = []
     for req in requests:
@@ -86,18 +87,27 @@ def get_requests_with_students_by_course(course_code, professor_id, term, status
     return result
 
 
-def get_student_requests_with_details(student_id):
+def get_student_requests_with_details_by_student_number(student_id):
     requests = Request.query.filter_by(student_id=student_id).order_by(Request.term.desc()).all()
     result = []
     for req in requests:
-        course_name = CourseName.query.get(req.course_code)
+        course = Course.query.filter_by(
+            code=req.course_code,
+            professor_id=req.professor_id,
+            term=req.term
+        ).first()
         professor = Professor.query.get(req.professor_id)
-        if course_name and professor:
-            result.append((req, course_name, professor))
+        if course and professor:
+            result.append({
+                'course_name': course.name,
+                'professor_name': professor.name,
+                'term': req.term,
+                'status': req.status
+            })
     return result
 
 
-def get_courses_with_accepted_tas():
+def get_courses_for_review(student_id):
     from models.course import Course
     all_courses = Course.query.all()
     result = []
@@ -108,9 +118,47 @@ def get_courses_with_accepted_tas():
             term=course.term,
             status='accepted'
         ).all()
-        if accepted:
-            course_name = CourseName.query.get(course.code)
+        
+        student_is_ta = False
+        for req in accepted:
+            if req.student_id == student_id:
+                student_is_ta = True
+                break
+        
+        if not student_is_ta:
             professor = Professor.query.get(course.professor_id)
-            if course_name and professor:
-                result.append((course, course_name, professor))
+            if professor:
+                result.append({
+                    'course': course,
+                    'professor': professor
+                })
+    return result
+
+
+def get_courses_with_status_for_student(student_id):
+    from models.course import Course
+    from models.professor import Professor
+    
+    all_courses = Course.query.all()
+    result = []
+    for course in all_courses:
+        professor = Professor.query.get(course.professor_id)
+        req = Request.query.filter_by(
+            student_id=student_id,
+            course_code=course.code,
+            professor_id=course.professor_id,
+            term=course.term
+        ).first()
+        
+        if req:
+            status = req.status
+        else:
+            status = None
+        
+        if professor:
+            result.append({
+                'course': course,
+                'professor': professor,
+                'status': status
+            })
     return result

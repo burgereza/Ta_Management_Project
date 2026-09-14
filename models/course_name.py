@@ -7,13 +7,12 @@ class CourseName(db.Model):
     name = db.Column(db.String(100), nullable=False)
 
 
-
 def get_all_course_names():
     return CourseName.query.all()
 
 
 def get_course_name_by_code(course_code):
-    return CourseName.query.get(course_code)
+    return CourseName.query.get(course_code).name
 
 
 def add_course_name(code, name):
