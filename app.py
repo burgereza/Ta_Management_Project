@@ -195,7 +195,7 @@ def student_ta_history(student_id):
 
 
 @app.route('/change_professor_password', methods=['POST'])
-def change_professor_password_route():
+def change_professor_password():
     if 'user_id' not in session:
         return redirect(url_for('login_professor'))
 
@@ -311,7 +311,7 @@ def add_review():
 
 
 @app.route('/change_student_password', methods=['POST'])
-def change_student_password_route():
+def change_student_password():
     if 'user_id' not in session:
         return redirect(url_for('login_student'))
 

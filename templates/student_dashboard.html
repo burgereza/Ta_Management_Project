@@ -24,7 +24,7 @@
 
         {% if section == 'profile' %}
             <div class="box card shadow-sm p-4" style="margin-left: 1200px; margin-right: 250px;">
-                <form method="POST" action="{{ url_for('change_student_password_route') }}">
+                <form method="POST" action="{{ url_for('change_student_password') }}">
                     <div class="form-group mb-3">
                         <label class="form-label">رمز عبور قبلی:</label>
                         <input type="password" name="old_password" class="form-control mb-3"  required>
