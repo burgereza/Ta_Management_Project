@@ -272,14 +272,15 @@ def review_course():
     course = models.course.get_course_by_code_professor_term(course_code, professor_id, term)
     professor_name = models.professor.get_professor_by_personnel_code(professor_id).name
 
-    accepted_requests = models.request.get_accepted_requests_for_course(course_code, professor_id, term)
-    tas = []
-    for req in accepted_requests:
-        student_obj = models.student.get_student_by_student_number(req.student_id)
-        if student_obj:
-            tas.append(student_obj)
+    course_tas = models.request.get_course_tas_by_course(course_code, professor_id, term)
+    # accepted_requests = models.request.get_accepted_requests_by_course(course_code, professor_id, term)
+    # tas = []
+    # for req in accepted_requests:
+    #     student_obj = models.student.get_student_by_student_number(req.student_id)
+    #     if student_obj:
+    #         tas.append(student_obj)
     
-    return render_template('review.html', course=course, tas=tas, professor_name=professor_name)
+    return render_template('review.html', course=course, tas=course_tas, professor_name=professor_name)
 
 
 

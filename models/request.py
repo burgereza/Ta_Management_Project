@@ -3,6 +3,7 @@ from models.student import Student
 from models.course_name import CourseName
 from models.professor import Professor
 from models.course import Course
+from models.student import Student
 
 class Request(db.Model):
     __tablename__ = 'requests'
@@ -52,8 +53,14 @@ def get_request_by_id(request_id):
     return Request.query.get(request_id)
 
 
-def get_accepted_requests_for_course(course_code, professor_id, term):
-    return Request.query.filter_by(course_code=course_code, professor_id=professor_id, term=term, status='accepted').all()
+def get_course_tas_by_course(course_code, professor_id, term):
+    accepted_requests = Request.query.filter_by(course_code=course_code, professor_id=professor_id, term=term, status='accepted').all()
+    tas = []
+    for req in accepted_requests:
+        student = Student.query.get(req.student_id)
+        if student:
+            tas.append(student)
+    return tas
 
 
 def get_requests_students_by_course(course_code, professor_id, term, status=None):
