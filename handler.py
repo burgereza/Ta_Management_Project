@@ -61,8 +61,11 @@ def get_student_requests(student_id):
 
 
 
-def get_courses_with_status_for_student(student_id): 
-    all_courses = Course.query.all()
+def get_courses_with_status_for_student(student_id, term=None): 
+    if term:
+        all_courses = Course.query.filter_by(term=term).all()
+    else:
+        all_courses = Course.query.all()
     result = []
     for course in all_courses:
         professor = Professor.query.get(course.professor_id)
@@ -76,6 +79,13 @@ def get_courses_with_status_for_student(student_id):
         if professor:
             result.append({'course': course, 'professor': professor, 'status': status})
     return result
+
+
+
+def get_professor_courses_by_term(professor_id, term):
+    if term:
+        return Course.query.filter_by(professor_id=professor_id, term=term).all()
+    return Course.query.filter_by(professor_id=professor_id).all()
 
 
 

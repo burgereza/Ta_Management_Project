@@ -55,6 +55,16 @@
             </div>
 
         {% else %}
+            <div class="box card shadow-sm p-3 mb-3" style="margin-left: 1200px; margin-right: 250px;">
+                <form method="GET" action="{{ url_for('professor_dashboard') }}" class="d-flex gap-2">
+                    <input type="hidden" name="section" value="courses">
+                    <input type="text" name="search_term" class="form-control" placeholder="شماره ترم" value="{{ search_term }}">
+                    <button type="submit" class="btn btn-primary">فیلتر</button>
+                    {% if search_term %}
+                        <a href="{{ url_for('professor_dashboard', section='courses') }}" class="btn btn-secondary">حذف فیلتر</a>
+                    {% endif %}
+                </form>
+            </div>
             {% if courses %}
                 <ul class="list-group" style="margin-left: 1200px; margin-right: 250px;">
                     {% for course in courses %}

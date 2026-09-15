@@ -107,8 +107,8 @@ def professor_dashboard():
         return redirect(url_for('login_professor'))
 
     professor_id = session['user_id']
-
     section = request.args.get('section')
+    search_term = request.args.get('search_term', '')
 
     if section == 'profile':
         return render_template('professor_dashboard.html', section='profile')
@@ -117,8 +117,8 @@ def professor_dashboard():
         course_names = models.course_name.get_all_course_names()
         return render_template('professor_dashboard.html' ,section='add_course' ,course_names=course_names)
 
-    courses = models.course.get_all_professor_courses(professor_id)
-    return render_template('professor_dashboard.html', section='courses', courses=courses)
+    courses = handler.get_professor_courses_by_term(professor_id, search_term)
+    return render_template('professor_dashboard.html', section='courses', courses=courses, search_term=search_term)
 
 
 
@@ -221,8 +221,8 @@ def student_dashboard():
         return redirect(url_for('login_student'))
 
     student_id = session['user_id']
-
     section = request.args.get('section', 'courses')
+    search_term = request.args.get('search_term', '')
 
     if section == 'profile':
         return render_template('student_dashboard.html', section='profile')
@@ -231,9 +231,9 @@ def student_dashboard():
         courses_for_review = handler.get_courses_for_review(student_id)
         return render_template('student_dashboard.html', section='review', courses=courses_for_review)
 
-    courses_with_status = handler.get_courses_with_status_for_student(student_id)
+    courses_with_status = handler.get_courses_with_status_for_student(student_id, search_term)
     
-    return render_template('student_dashboard.html', section='courses', courses=courses_with_status)
+    return render_template('student_dashboard.html', section='courses', courses=courses_with_status, search_term=search_term)
 
 
 
