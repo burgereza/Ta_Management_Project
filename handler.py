@@ -23,8 +23,24 @@ def get_requests_students_by_course(course_code, professor_id, term, status=None
     for request in requests:
         student = Student.query.get(request.student_id)
         if student:
-            result.append((request, student))
+            rate = get_student_rate(student.student_number)
+            if rate:
+                result.append((request, student, rate))
+            else:
+                result.append((request, student, '-'))
     return result
+
+
+def get_student_rate(student_id):
+    from models.review import Review
+    reviews = Review.query.filter_by(ta_id=student_id).all()
+    if not reviews:
+        return None
+    total = 0
+    for review in reviews:
+        total = total + review.rating
+    average = total / len(reviews)
+    return round(average, 1)
 
 
 
@@ -50,10 +66,10 @@ def get_courses_with_status_for_student(student_id):
     result = []
     for course in all_courses:
         professor = Professor.query.get(course.professor_id)
-        req = Request.query.filter_by(student_id=student_id, course_code=course.code, professor_id=course.professor_id, term=course.term).first()
+        request = Request.query.filter_by(student_id=student_id, course_code=course.code, professor_id=course.professor_id, term=course.term).first()
         
-        if req:
-            status = req.status
+        if request:
+            status = request.status
         else:
             status = None
         
@@ -80,3 +96,5 @@ def get_courses_for_review(student_id):
             if professor:
                 result.append({'course': course, 'professor': professor})
     return result
+
+

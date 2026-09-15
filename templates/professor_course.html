@@ -22,10 +22,10 @@
     <div class="main container-fluid py-4" dir="rtl">
         <h4 class="mb-3" style="margin-left: 1200px; margin-right: 250px;">لیست درخواست های دستیاری - {{ course.name }}</h4>
         <ul class="list-group mb-4" style="margin-left: 1200px; margin-right: 250px;">
-            {% for req, student in pending %}
+            {% for req, student, rate in pending %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <a class="student-link text-decoration-none fw-bold" href="{{ url_for('student_ta_history', student_id=student.student_number) }}">
-                        {{ student.name }}
+                        {{ student.name }}  ({{rate}})
                     </a>
                     <a class="btn-accept btn btn-success btn-sm" href="{{ url_for('accept_request', request_id=req.id) }}">قبول درخواست</a>
                 </li>
@@ -36,10 +36,10 @@
 
         <h4 class="mt-5 mb-3" style="margin-left: 1200px; margin-right: 250px;">دستیاران پذیرفته‌شده</h4>
         <ul class="list-group" style="margin-left: 1200px; margin-right: 250px;">
-            {% for req, student in accepted %}
+            {% for req, student, rate in accepted %}
                 <li class="list-group-item">
                     <a class="student-link text-decoration-none fw-bold" href="{{ url_for('student_ta_history', student_id=student.student_number) }}">
-                        {{ student.name }}
+                        {{ student.name }}  ({{rate}})
                     </a>
                 </li>
             {% else %}

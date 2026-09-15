@@ -3,9 +3,9 @@ from database import db
 
 class Professor(db.Model):
     __tablename__ = 'professors'
-    personnel_code = db.Column(db.String(20), primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    password = db.Column(db.String(20), nullable=False)
+    personnel_code = db.Column(db.String(10), primary_key=True)
+    name = db.Column(db.String(20), nullable=False)
+    password = db.Column(db.String(10), nullable=False)
 
 
 def get_professor(personnel_code):
